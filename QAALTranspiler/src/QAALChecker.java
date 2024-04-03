@@ -100,7 +100,7 @@ public class QAALChecker extends QAALBaseVisitor<Types>
 
     @Override
     public Types visitBoolExp(QAALParser.BoolExpContext ctx) {
-        return Types.BOOLEAN;
+        return Types.BOOL;
     }
 
     @Override
@@ -127,7 +127,7 @@ public class QAALChecker extends QAALBaseVisitor<Types>
                 if (operand1Type != Types.INT || operand2Type != Types.INT){
                     throw new TypeException().comparisonError();
                 }
-                yield Types.BOOLEAN;
+                yield Types.BOOL;
             }
             case QAALParser.NumExp -> {
                 if (operand1Type != Types.INT || operand2Type != Types.INT){
@@ -136,10 +136,10 @@ public class QAALChecker extends QAALBaseVisitor<Types>
                 yield Types.INT;
             }
             case QAALParser.BooleExp -> {
-                if (operand1Type != Types.BOOLEAN || operand2Type != Types.BOOLEAN){
+                if (operand1Type != Types.BOOL || operand2Type != Types.BOOL){
                     throw new TypeException().logicalError();
                 }
-                yield Types.BOOLEAN;
+                yield Types.BOOL;
             }
             default -> throw new RuntimeException("Shouldn't be here");
         };
@@ -171,7 +171,7 @@ public class QAALChecker extends QAALBaseVisitor<Types>
     }
     @Override
     public Types visitIfExp(QAALParser.IfExpContext ctx) {
-        if (visit(ctx.exp()) != Types.BOOLEAN){
+        if (visit(ctx.exp()) != Types.BOOL){
             throw new TypeException().conditionError();
         }
         else if (visit(ctx.block(0)) != visit(ctx.block(1))){
@@ -183,7 +183,7 @@ public class QAALChecker extends QAALBaseVisitor<Types>
     }
     @Override
     public Types visitWhileExp(QAALParser.WhileExpContext ctx) {
-        if (visit(ctx.exp()) != Types.BOOLEAN){
+        if (visit(ctx.exp()) != Types.BOOL){
             throw new TypeException().conditionError();
         }
         else if (visit(ctx.block()) != Types.UNIT){
@@ -195,7 +195,7 @@ public class QAALChecker extends QAALBaseVisitor<Types>
     }
     @Override
     public Types visitRepeatExp(QAALParser.RepeatExpContext ctx) {
-        if (visit(ctx.exp()) != Types.BOOLEAN){
+        if (visit(ctx.exp()) != Types.BOOL){
             throw new TypeException().conditionError();
         }
         else if (visit(ctx.block()) != Types.UNIT){
@@ -240,7 +240,7 @@ public class QAALChecker extends QAALBaseVisitor<Types>
     public Types visitType(QAALParser.TypeContext ctx) {
         return switch (((TerminalNode) ctx.getChild(0)).getSymbol().getType()) {
             case QAALParser.Int -> Types.INT;
-            case QAALParser.Bool -> Types.BOOLEAN;
+            case QAALParser.Bool -> Types.BOOL;
             default -> Types.UNIT;
         };
     }
