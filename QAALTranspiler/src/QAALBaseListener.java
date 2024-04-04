@@ -1,4 +1,4 @@
-// Generated from C:/Users/Anton/Documents/Code/QAALInterpreter/ANTLR\QAAL.g4 by ANTLR 4.10.1
+// Generated from C:/Users/Anton/Documents/Code/QAALInterpreter/QAALTranspiler/src\QAAL.g4 by ANTLR 4.10.1
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -39,18 +39,6 @@ public class QAALBaseListener implements QAALListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterVardec(QAALParser.VardecContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitVardec(QAALParser.VardecContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterBody(QAALParser.BodyContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -63,193 +51,301 @@ public class QAALBaseListener implements QAALListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBlock(QAALParser.BlockContext ctx) { }
+	@Override public void enterOutput(QAALParser.OutputContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBlock(QAALParser.BlockContext ctx) { }
+	@Override public void exitOutput(QAALParser.OutputContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterEne(QAALParser.EneContext ctx) { }
+	@Override public void enterAdditional_reg(QAALParser.Additional_regContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitEne(QAALParser.EneContext ctx) { }
+	@Override public void exitAdditional_reg(QAALParser.Additional_regContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIdfrExp(QAALParser.IdfrExpContext ctx) { }
+	@Override public void enterSubroutines_dec(QAALParser.Subroutines_decContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIdfrExp(QAALParser.IdfrExpContext ctx) { }
+	@Override public void exitSubroutines_dec(QAALParser.Subroutines_decContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIntExp(QAALParser.IntExpContext ctx) { }
+	@Override public void enterReg_dec(QAALParser.Reg_decContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIntExp(QAALParser.IntExpContext ctx) { }
+	@Override public void exitReg_dec(QAALParser.Reg_decContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBoolExp(QAALParser.BoolExpContext ctx) { }
+	@Override public void enterBit_dec(QAALParser.Bit_decContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBoolExp(QAALParser.BoolExpContext ctx) { }
+	@Override public void exitBit_dec(QAALParser.Bit_decContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAssignExp(QAALParser.AssignExpContext ctx) { }
+	@Override public void enterVardec(QAALParser.VardecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAssignExp(QAALParser.AssignExpContext ctx) { }
+	@Override public void exitVardec(QAALParser.VardecContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBinopExp(QAALParser.BinopExpContext ctx) { }
+	@Override public void enterCs_dec(QAALParser.Cs_decContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBinopExp(QAALParser.BinopExpContext ctx) { }
+	@Override public void exitCs_dec(QAALParser.Cs_decContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterArgExp(QAALParser.ArgExpContext ctx) { }
+	@Override public void enterCsExp(QAALParser.CsExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitArgExp(QAALParser.ArgExpContext ctx) { }
+	@Override public void exitCsExp(QAALParser.CsExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBlockExp(QAALParser.BlockExpContext ctx) { }
+	@Override public void enterRegExp(QAALParser.RegExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBlockExp(QAALParser.BlockExpContext ctx) { }
+	@Override public void exitRegExp(QAALParser.RegExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIfExp(QAALParser.IfExpContext ctx) { }
+	@Override public void enterMzExp(QAALParser.MzExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIfExp(QAALParser.IfExpContext ctx) { }
+	@Override public void exitMzExp(QAALParser.MzExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterWhileExp(QAALParser.WhileExpContext ctx) { }
+	@Override public void enterInvokeExp(QAALParser.InvokeExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitWhileExp(QAALParser.WhileExpContext ctx) { }
+	@Override public void exitInvokeExp(QAALParser.InvokeExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRepeatExp(QAALParser.RepeatExpContext ctx) { }
+	@Override public void enterLabelExp(QAALParser.LabelExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRepeatExp(QAALParser.RepeatExpContext ctx) { }
+	@Override public void exitLabelExp(QAALParser.LabelExpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPrintExp(QAALParser.PrintExpContext ctx) { }
+	@Override public void enterQuantum_op(QAALParser.Quantum_opContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPrintExp(QAALParser.PrintExpContext ctx) { }
+	@Override public void exitQuantum_op(QAALParser.Quantum_opContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSpaceExp(QAALParser.SpaceExpContext ctx) { }
+	@Override public void enterAngle_rotation(QAALParser.Angle_rotationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitSpaceExp(QAALParser.SpaceExpContext ctx) { }
+	@Override public void exitAngle_rotation(QAALParser.Angle_rotationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterNewlineExp(QAALParser.NewlineExpContext ctx) { }
+	@Override public void enterMeasurement(QAALParser.MeasurementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitNewlineExp(QAALParser.NewlineExpContext ctx) { }
+	@Override public void exitMeasurement(QAALParser.MeasurementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSkipExp(QAALParser.SkipExpContext ctx) { }
+	@Override public void enterLabel(QAALParser.LabelContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitSkipExp(QAALParser.SkipExpContext ctx) { }
+	@Override public void exitLabel(QAALParser.LabelContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterUncondJump(QAALParser.UncondJumpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitUncondJump(QAALParser.UncondJumpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIfZeroJump(QAALParser.IfZeroJumpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIfZeroJump(QAALParser.IfZeroJumpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIfGtrJump(QAALParser.IfGtrJumpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIfGtrJump(QAALParser.IfGtrJumpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCs_exp(QAALParser.Cs_expContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCs_exp(QAALParser.Cs_expContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIdfrArith(QAALParser.IdfrArithContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIdfrArith(QAALParser.IdfrArithContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIntArith(QAALParser.IntArithContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIntArith(QAALParser.IntArithContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPiArith(QAALParser.PiArithContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPiArith(QAALParser.PiArithContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCombArith(QAALParser.CombArithContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCombArith(QAALParser.CombArithContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAngle_dec(QAALParser.Angle_decContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAngle_dec(QAALParser.Angle_decContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -262,42 +358,6 @@ public class QAALBaseListener implements QAALListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitArgs(QAALParser.ArgsContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBinop(QAALParser.BinopContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBinop(QAALParser.BinopContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterType(QAALParser.TypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitType(QAALParser.TypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBoolit(QAALParser.BoolitContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBoolit(QAALParser.BoolitContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

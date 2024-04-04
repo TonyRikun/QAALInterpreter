@@ -1,4 +1,4 @@
-// Generated from C:/Users/Anton/Documents/Code/QAALInterpreter/ANTLR\QAAL.g4 by ANTLR 4.10.1
+// Generated from C:/Users/Anton/Documents/Code/QAALInterpreter/QAALTranspiler/src\QAAL.g4 by ANTLR 4.10.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -27,16 +27,6 @@ public interface QAALListener extends ParseTreeListener {
 	 */
 	void exitDec(QAALParser.DecContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link QAALParser#vardec}.
-	 * @param ctx the parse tree
-	 */
-	void enterVardec(QAALParser.VardecContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link QAALParser#vardec}.
-	 * @param ctx the parse tree
-	 */
-	void exitVardec(QAALParser.VardecContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link QAALParser#body}.
 	 * @param ctx the parse tree
 	 */
@@ -47,193 +37,279 @@ public interface QAALListener extends ParseTreeListener {
 	 */
 	void exitBody(QAALParser.BodyContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link QAALParser#block}.
+	 * Enter a parse tree produced by {@link QAALParser#output}.
 	 * @param ctx the parse tree
 	 */
-	void enterBlock(QAALParser.BlockContext ctx);
+	void enterOutput(QAALParser.OutputContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link QAALParser#block}.
+	 * Exit a parse tree produced by {@link QAALParser#output}.
 	 * @param ctx the parse tree
 	 */
-	void exitBlock(QAALParser.BlockContext ctx);
+	void exitOutput(QAALParser.OutputContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link QAALParser#ene}.
+	 * Enter a parse tree produced by {@link QAALParser#additional_reg}.
 	 * @param ctx the parse tree
 	 */
-	void enterEne(QAALParser.EneContext ctx);
+	void enterAdditional_reg(QAALParser.Additional_regContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link QAALParser#ene}.
+	 * Exit a parse tree produced by {@link QAALParser#additional_reg}.
 	 * @param ctx the parse tree
 	 */
-	void exitEne(QAALParser.EneContext ctx);
+	void exitAdditional_reg(QAALParser.Additional_regContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code IdfrExp}
+	 * Enter a parse tree produced by {@link QAALParser#subroutines_dec}.
+	 * @param ctx the parse tree
+	 */
+	void enterSubroutines_dec(QAALParser.Subroutines_decContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link QAALParser#subroutines_dec}.
+	 * @param ctx the parse tree
+	 */
+	void exitSubroutines_dec(QAALParser.Subroutines_decContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link QAALParser#reg_dec}.
+	 * @param ctx the parse tree
+	 */
+	void enterReg_dec(QAALParser.Reg_decContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link QAALParser#reg_dec}.
+	 * @param ctx the parse tree
+	 */
+	void exitReg_dec(QAALParser.Reg_decContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link QAALParser#bit_dec}.
+	 * @param ctx the parse tree
+	 */
+	void enterBit_dec(QAALParser.Bit_decContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link QAALParser#bit_dec}.
+	 * @param ctx the parse tree
+	 */
+	void exitBit_dec(QAALParser.Bit_decContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link QAALParser#vardec}.
+	 * @param ctx the parse tree
+	 */
+	void enterVardec(QAALParser.VardecContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link QAALParser#vardec}.
+	 * @param ctx the parse tree
+	 */
+	void exitVardec(QAALParser.VardecContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link QAALParser#cs_dec}.
+	 * @param ctx the parse tree
+	 */
+	void enterCs_dec(QAALParser.Cs_decContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link QAALParser#cs_dec}.
+	 * @param ctx the parse tree
+	 */
+	void exitCs_dec(QAALParser.Cs_decContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code CsExp}
 	 * labeled alternative in {@link QAALParser#exp}.
 	 * @param ctx the parse tree
 	 */
-	void enterIdfrExp(QAALParser.IdfrExpContext ctx);
+	void enterCsExp(QAALParser.CsExpContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code IdfrExp}
+	 * Exit a parse tree produced by the {@code CsExp}
 	 * labeled alternative in {@link QAALParser#exp}.
 	 * @param ctx the parse tree
 	 */
-	void exitIdfrExp(QAALParser.IdfrExpContext ctx);
+	void exitCsExp(QAALParser.CsExpContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code IntExp}
+	 * Enter a parse tree produced by the {@code RegExp}
 	 * labeled alternative in {@link QAALParser#exp}.
 	 * @param ctx the parse tree
 	 */
-	void enterIntExp(QAALParser.IntExpContext ctx);
+	void enterRegExp(QAALParser.RegExpContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code IntExp}
+	 * Exit a parse tree produced by the {@code RegExp}
 	 * labeled alternative in {@link QAALParser#exp}.
 	 * @param ctx the parse tree
 	 */
-	void exitIntExp(QAALParser.IntExpContext ctx);
+	void exitRegExp(QAALParser.RegExpContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code BoolExp}
+	 * Enter a parse tree produced by the {@code MzExp}
 	 * labeled alternative in {@link QAALParser#exp}.
 	 * @param ctx the parse tree
 	 */
-	void enterBoolExp(QAALParser.BoolExpContext ctx);
+	void enterMzExp(QAALParser.MzExpContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code BoolExp}
+	 * Exit a parse tree produced by the {@code MzExp}
 	 * labeled alternative in {@link QAALParser#exp}.
 	 * @param ctx the parse tree
 	 */
-	void exitBoolExp(QAALParser.BoolExpContext ctx);
+	void exitMzExp(QAALParser.MzExpContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code AssignExp}
+	 * Enter a parse tree produced by the {@code InvokeExp}
 	 * labeled alternative in {@link QAALParser#exp}.
 	 * @param ctx the parse tree
 	 */
-	void enterAssignExp(QAALParser.AssignExpContext ctx);
+	void enterInvokeExp(QAALParser.InvokeExpContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code AssignExp}
+	 * Exit a parse tree produced by the {@code InvokeExp}
 	 * labeled alternative in {@link QAALParser#exp}.
 	 * @param ctx the parse tree
 	 */
-	void exitAssignExp(QAALParser.AssignExpContext ctx);
+	void exitInvokeExp(QAALParser.InvokeExpContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code BinopExp}
+	 * Enter a parse tree produced by the {@code LabelExp}
 	 * labeled alternative in {@link QAALParser#exp}.
 	 * @param ctx the parse tree
 	 */
-	void enterBinopExp(QAALParser.BinopExpContext ctx);
+	void enterLabelExp(QAALParser.LabelExpContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code BinopExp}
+	 * Exit a parse tree produced by the {@code LabelExp}
 	 * labeled alternative in {@link QAALParser#exp}.
 	 * @param ctx the parse tree
 	 */
-	void exitBinopExp(QAALParser.BinopExpContext ctx);
+	void exitLabelExp(QAALParser.LabelExpContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code ArgExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Enter a parse tree produced by {@link QAALParser#quantum_op}.
 	 * @param ctx the parse tree
 	 */
-	void enterArgExp(QAALParser.ArgExpContext ctx);
+	void enterQuantum_op(QAALParser.Quantum_opContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code ArgExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Exit a parse tree produced by {@link QAALParser#quantum_op}.
 	 * @param ctx the parse tree
 	 */
-	void exitArgExp(QAALParser.ArgExpContext ctx);
+	void exitQuantum_op(QAALParser.Quantum_opContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code BlockExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Enter a parse tree produced by {@link QAALParser#angle_rotation}.
 	 * @param ctx the parse tree
 	 */
-	void enterBlockExp(QAALParser.BlockExpContext ctx);
+	void enterAngle_rotation(QAALParser.Angle_rotationContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code BlockExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Exit a parse tree produced by {@link QAALParser#angle_rotation}.
 	 * @param ctx the parse tree
 	 */
-	void exitBlockExp(QAALParser.BlockExpContext ctx);
+	void exitAngle_rotation(QAALParser.Angle_rotationContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code IfExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Enter a parse tree produced by {@link QAALParser#measurement}.
 	 * @param ctx the parse tree
 	 */
-	void enterIfExp(QAALParser.IfExpContext ctx);
+	void enterMeasurement(QAALParser.MeasurementContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code IfExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Exit a parse tree produced by {@link QAALParser#measurement}.
 	 * @param ctx the parse tree
 	 */
-	void exitIfExp(QAALParser.IfExpContext ctx);
+	void exitMeasurement(QAALParser.MeasurementContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code WhileExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Enter a parse tree produced by {@link QAALParser#label}.
 	 * @param ctx the parse tree
 	 */
-	void enterWhileExp(QAALParser.WhileExpContext ctx);
+	void enterLabel(QAALParser.LabelContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code WhileExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Exit a parse tree produced by {@link QAALParser#label}.
 	 * @param ctx the parse tree
 	 */
-	void exitWhileExp(QAALParser.WhileExpContext ctx);
+	void exitLabel(QAALParser.LabelContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code RepeatExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Enter a parse tree produced by the {@code UncondJump}
+	 * labeled alternative in {@link QAALParser#jump}.
 	 * @param ctx the parse tree
 	 */
-	void enterRepeatExp(QAALParser.RepeatExpContext ctx);
+	void enterUncondJump(QAALParser.UncondJumpContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code RepeatExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Exit a parse tree produced by the {@code UncondJump}
+	 * labeled alternative in {@link QAALParser#jump}.
 	 * @param ctx the parse tree
 	 */
-	void exitRepeatExp(QAALParser.RepeatExpContext ctx);
+	void exitUncondJump(QAALParser.UncondJumpContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code PrintExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Enter a parse tree produced by the {@code IfZeroJump}
+	 * labeled alternative in {@link QAALParser#jump}.
 	 * @param ctx the parse tree
 	 */
-	void enterPrintExp(QAALParser.PrintExpContext ctx);
+	void enterIfZeroJump(QAALParser.IfZeroJumpContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code PrintExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Exit a parse tree produced by the {@code IfZeroJump}
+	 * labeled alternative in {@link QAALParser#jump}.
 	 * @param ctx the parse tree
 	 */
-	void exitPrintExp(QAALParser.PrintExpContext ctx);
+	void exitIfZeroJump(QAALParser.IfZeroJumpContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code SpaceExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Enter a parse tree produced by the {@code IfGtrJump}
+	 * labeled alternative in {@link QAALParser#jump}.
 	 * @param ctx the parse tree
 	 */
-	void enterSpaceExp(QAALParser.SpaceExpContext ctx);
+	void enterIfGtrJump(QAALParser.IfGtrJumpContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code SpaceExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Exit a parse tree produced by the {@code IfGtrJump}
+	 * labeled alternative in {@link QAALParser#jump}.
 	 * @param ctx the parse tree
 	 */
-	void exitSpaceExp(QAALParser.SpaceExpContext ctx);
+	void exitIfGtrJump(QAALParser.IfGtrJumpContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code NewlineExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Enter a parse tree produced by {@link QAALParser#cs_exp}.
 	 * @param ctx the parse tree
 	 */
-	void enterNewlineExp(QAALParser.NewlineExpContext ctx);
+	void enterCs_exp(QAALParser.Cs_expContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code NewlineExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Exit a parse tree produced by {@link QAALParser#cs_exp}.
 	 * @param ctx the parse tree
 	 */
-	void exitNewlineExp(QAALParser.NewlineExpContext ctx);
+	void exitCs_exp(QAALParser.Cs_expContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code SkipExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Enter a parse tree produced by the {@code IdfrArith}
+	 * labeled alternative in {@link QAALParser#arithmetic}.
 	 * @param ctx the parse tree
 	 */
-	void enterSkipExp(QAALParser.SkipExpContext ctx);
+	void enterIdfrArith(QAALParser.IdfrArithContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code SkipExp}
-	 * labeled alternative in {@link QAALParser#exp}.
+	 * Exit a parse tree produced by the {@code IdfrArith}
+	 * labeled alternative in {@link QAALParser#arithmetic}.
 	 * @param ctx the parse tree
 	 */
-	void exitSkipExp(QAALParser.SkipExpContext ctx);
+	void exitIdfrArith(QAALParser.IdfrArithContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code IntArith}
+	 * labeled alternative in {@link QAALParser#arithmetic}.
+	 * @param ctx the parse tree
+	 */
+	void enterIntArith(QAALParser.IntArithContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code IntArith}
+	 * labeled alternative in {@link QAALParser#arithmetic}.
+	 * @param ctx the parse tree
+	 */
+	void exitIntArith(QAALParser.IntArithContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code PiArith}
+	 * labeled alternative in {@link QAALParser#arithmetic}.
+	 * @param ctx the parse tree
+	 */
+	void enterPiArith(QAALParser.PiArithContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code PiArith}
+	 * labeled alternative in {@link QAALParser#arithmetic}.
+	 * @param ctx the parse tree
+	 */
+	void exitPiArith(QAALParser.PiArithContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code CombArith}
+	 * labeled alternative in {@link QAALParser#arithmetic}.
+	 * @param ctx the parse tree
+	 */
+	void enterCombArith(QAALParser.CombArithContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code CombArith}
+	 * labeled alternative in {@link QAALParser#arithmetic}.
+	 * @param ctx the parse tree
+	 */
+	void exitCombArith(QAALParser.CombArithContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link QAALParser#angle_dec}.
+	 * @param ctx the parse tree
+	 */
+	void enterAngle_dec(QAALParser.Angle_decContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link QAALParser#angle_dec}.
+	 * @param ctx the parse tree
+	 */
+	void exitAngle_dec(QAALParser.Angle_decContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link QAALParser#args}.
 	 * @param ctx the parse tree
@@ -244,34 +320,4 @@ public interface QAALListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArgs(QAALParser.ArgsContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link QAALParser#binop}.
-	 * @param ctx the parse tree
-	 */
-	void enterBinop(QAALParser.BinopContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link QAALParser#binop}.
-	 * @param ctx the parse tree
-	 */
-	void exitBinop(QAALParser.BinopContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link QAALParser#type}.
-	 * @param ctx the parse tree
-	 */
-	void enterType(QAALParser.TypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link QAALParser#type}.
-	 * @param ctx the parse tree
-	 */
-	void exitType(QAALParser.TypeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link QAALParser#boolit}.
-	 * @param ctx the parse tree
-	 */
-	void enterBoolit(QAALParser.BoolitContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link QAALParser#boolit}.
-	 * @param ctx the parse tree
-	 */
-	void exitBoolit(QAALParser.BoolitContext ctx);
 }

@@ -163,5 +163,17 @@ public class TypeException extends RuntimeException
         return this;
     }
 
+    //New type exceptions
+    //_________________________________________________________________________________________________________________________________
+
+    public TypeException outputTypeError(){
+        msg = "Object is not of the declared output type";
+        return this;
+    }
+
+    public TypeException operandError(){
+        msg = "Registers initialised at the start of the program cannot be operands";
+        return this;
+    }
 
 }

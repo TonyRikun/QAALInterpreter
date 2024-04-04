@@ -1,4 +1,4 @@
-// Generated from C:/Users/Anton/Documents/Code/QAALInterpreter/ANTLR\QAAL.g4 by ANTLR 4.10.1
+// Generated from C:/Users/Anton/Documents/Code/QAALInterpreter/QAALTranspiler/src\QAAL.g4 by ANTLR 4.10.1
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
@@ -30,13 +30,6 @@ public class QAALBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements Q
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitVardec(QAALParser.VardecContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public T visitBody(QAALParser.BodyContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -44,112 +37,175 @@ public class QAALBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements Q
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitBlock(QAALParser.BlockContext ctx) { return visitChildren(ctx); }
+	@Override public T visitOutput(QAALParser.OutputContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitEne(QAALParser.EneContext ctx) { return visitChildren(ctx); }
+	@Override public T visitAdditional_reg(QAALParser.Additional_regContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitIdfrExp(QAALParser.IdfrExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitSubroutines_dec(QAALParser.Subroutines_decContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitIntExp(QAALParser.IntExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitReg_dec(QAALParser.Reg_decContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitBoolExp(QAALParser.BoolExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitBit_dec(QAALParser.Bit_decContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitAssignExp(QAALParser.AssignExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitVardec(QAALParser.VardecContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitBinopExp(QAALParser.BinopExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitCs_dec(QAALParser.Cs_decContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitArgExp(QAALParser.ArgExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitCsExp(QAALParser.CsExpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitBlockExp(QAALParser.BlockExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitRegExp(QAALParser.RegExpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitIfExp(QAALParser.IfExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitMzExp(QAALParser.MzExpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitWhileExp(QAALParser.WhileExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitInvokeExp(QAALParser.InvokeExpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitRepeatExp(QAALParser.RepeatExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitLabelExp(QAALParser.LabelExpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPrintExp(QAALParser.PrintExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitQuantum_op(QAALParser.Quantum_opContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitSpaceExp(QAALParser.SpaceExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitAngle_rotation(QAALParser.Angle_rotationContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitNewlineExp(QAALParser.NewlineExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitMeasurement(QAALParser.MeasurementContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitSkipExp(QAALParser.SkipExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitLabel(QAALParser.LabelContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitUncondJump(QAALParser.UncondJumpContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitIfZeroJump(QAALParser.IfZeroJumpContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitIfGtrJump(QAALParser.IfGtrJumpContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitCs_exp(QAALParser.Cs_expContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitIdfrArith(QAALParser.IdfrArithContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitIntArith(QAALParser.IntArithContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitPiArith(QAALParser.PiArithContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitCombArith(QAALParser.CombArithContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitAngle_dec(QAALParser.Angle_decContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -157,25 +213,4 @@ public class QAALBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements Q
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitArgs(QAALParser.ArgsContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitBinop(QAALParser.BinopContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitType(QAALParser.TypeContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitBoolit(QAALParser.BoolitContext ctx) { return visitChildren(ctx); }
 }
