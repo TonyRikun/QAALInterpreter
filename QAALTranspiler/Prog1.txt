@@ -1,4 +1,5 @@
-bit a
+qubit a
+bit b
 H a
 stop
-output a
+output bit b

@@ -17,6 +17,10 @@ repositories {
 
 }
 
+tasks.named<JavaExec>("run"){
+    standardInput = System.`in`
+}
+
 tasks.generateGrammarSource{
     arguments = arguments + listOf("-visitor")
 }
