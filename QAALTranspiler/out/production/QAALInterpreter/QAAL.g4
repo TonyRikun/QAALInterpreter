@@ -1,56 +1,72 @@
 grammar QAAL;
 
-prog: dec body Stop output+ EOF; //Main program
-dec: additional_reg* subroutines_dec*; //Declaration of input registers/bits, additional registers/bits, and subroutines
-additional_reg: ('operand' | 'input')? (reg_dec | bit_dec); //Declaration of additional registers/bits that can also be operands
-subroutines_dec: 'define' Idfr '(' vardec ')' vardec ':' body Stop; //Declaration of subroutine, with read-only control statement parameters and operands
+prog: dec body Stop output+ EOF; //Main program - consists of declarations section, body, stop word, and output
+//prog
+dec: additional_reg* subroutines_dec*; //Declaration of input registers, additional registers, and subroutines
+body: cs_dec* exp+;
+output: 'output' (Bit Idfr | Reg Idfr Index?);
+//dec
+additional_reg: Operand? (reg_dec | bit_dec); //Declaration of additional registers that can also be operands
+subroutines_dec: 'define' Idfr vardec ':' additional_reg* body Stop; //Declaration of subroutine, with read-only control statement parameters and operands
+reg_dec: Reg Idfr ':' Intlit (Bits | Qubits); //Declaration of register consisting of bits/qubits
+bit_dec: (Bit | Qubit) Idfr; //Declaration of a register that holds a single bit or qubit
+vardec: ('('Idfr (',' Idfr)*')')? (Idfr (',' Idfr)*)?; //Declaration of parameters
+//body
 cs_dec: '!' Int Idfr ':=' Intlit; //Declaration of classical varaibles; seperate from cs_exp because declarations of variables must be made before any kind of operations can be performed on them
-vardec: (Idfr (',' Idfr)*)?; //Declaration of parameters
-body: additional_reg* cs_dec* exp+;
 
 //All expressions
-exp: '!' cs_exp
-| Classical_op (Idfr ('[' Intlit ']')? (',' Idfr ('[' Intlit ']')?)*)
-| Quantum_op ('(' args ')')? (Idfr ('[' Intlit ']')? (',' Idfr ('[' Intlit ']')?)*)
-| Idfr '(' args ')' (Idfr (',' Idfr)*)?
-| Comment
-| label ':';
-
-//Control statements
-cs_exp: arithmetic
-| jump
-| 'randomise' Idfr
-| 'set' Idfr ':=' arithmetic
-| angle_dec;
+exp: '!' cs_exp                                                                     #CsExp //Control statements, all need to start with !
+| (Classical_op | quantum_op) Idfr Index? (',' Idfr Index?)*                        #RegExp //Operations performed on registers and quantum registers
+| measurement                                                                       #MzExp //Measurement of a quantum register
+| Idfr '(' args? ')' (Idfr (',' Idfr)*)?                                            #InvokeExp //Invocation of a function
+| label ':'                                                                         #LabelExp
+;
 
 Classical_op: 'NOT' | 'CNOT' | 'CCNOT';
-Quantum_op: 'Rx' | 'Ry' | 'Rz' | 'X' | 'Y' | 'Z' | 'H' | 'CX' | 'CY' | 'CZ' | 'CRx' | 'CRy' | 'CRz' | 'CCX' | 'SWAP';
+quantum_op: angle_rotation | Transformation; //Quantum operations that are either [controlled] rotations around an axis by a specified angle or other gates that don't require an angle parameter
+angle_rotation: ('Rx' | 'Ry' | 'Rz' | 'CRx' | 'CRy' | 'CRz') '(' args ')';
+Transformation: 'X' | 'Y' | 'Z' | 'H' | 'CX' | 'CY' | 'CZ' | 'CCX' | 'SWAP';
+measurement: 'Mz' Idfr Index? '->' Idfr Index?; /*Needs to be modified to work with registers*/ //Measurement of a quantum register into classical register
 
-arithmetic: (Idfr | Intlit | ('(' arithmetic NumExp arithmetic ')'));
-angle_dec: Angle Idfr ':=' arithmetic 'pi';
-output: 'output' (Bit Idfr ('[' Intlit ']')? | Reg Idfr);
-reg_dec: Reg Idfr ':' Intlit ('bits' | 'qbits');
-bit_dec: (Bit | Qbit) Idfr;
-//type: Bit | Qbit | Int | Bool | Unit | Reg | Angle;
-args: ((Idfr | Intlit) (',' (Idfr | Intlit))*)?;
 label: '@' Idfr;
-
 //Jumps
-jump: 'jump' (label
-| 'if zero' Idfr ',' label
-| 'if gtr' Idfr ',' Idfr ',' label);
+jump: 'jump' label                                                                  #UncondJump //Unconditional jump
+| 'if zero' Idfr ',' label                                                          #IfZeroJump //Jump if the variable is equal to 0
+| 'if gtr' Idfr ',' Idfr ',' label                                                  #IfGtrJump //Jump if the first variable is greater than the second one
+;
+
+//Control statements
+cs_exp: jump //Conditional or uncoditional jumps
+| 'randomise' Idfr //Randomise function
+| 'set' Idfr ':=' arithmetic //Setting control statement variables to a value
+| angle_dec //Declaration of an angle
+;
+
+arithmetic: Idfr                                                                    #IdfrArith //Arithmetic statement where the expression is an identifier
+| Intlit                                                                            #IntArith //Arithmetic statement where the expression is an integer
+| Pi                                                                                #PiArith //Arithmetic statement where the expression is a value of pi
+| ('(' arithmetic NumExp arithmetic ')')                                            #CombArith //Arithmetic statement where the expression is a combination of above with an additional numeric operator
+;
+angle_dec: Angle Idfr ':=' arithmetic;
+//type: Bit | Qubit | Int | Bool | Unit | Reg | Angle;
+args: (Idfr | Intlit) (',' (Idfr | Intlit))*; //Arguments passed to a subroutine/angle_rotation
 
 Comment: '#' ~('\r' | '\n')* -> skip;
 NumExp: '+'|'*'|'-'|'/';
+Index: '[' Intlit ']';
 Reg: 'register';
 Bit: 'bit';
-Qbit: 'qbit';
+Qubit: 'qubit';
 Int: 'integer';
 Angle: 'angle';
 Unit: 'unit';
 Bool: 'bool';
 Stop: 'stop';
+Operand: 'operand';
+Pi: 'pi';
+Bits: 'bits';
+Qubits: 'qubits';
 Intlit: '0' | ('-'? [1-9][0-9]*);
-Keywords: 'print' | 'bits' | 'qbits' | 'jump' | 'if' | 'define' | 'input' | 'operand' | 'randomise' | 'pi';
+Keywords: 'print' | 'jump' | 'if' | 'define' | 'input' | 'randomise';
 Idfr: [A-Za-z][A-Za-z0-9_]* ;
 WS: [ \n\r\t]+ -> skip ;

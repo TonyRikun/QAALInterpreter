@@ -97,6 +97,26 @@ public interface QAALListener extends ParseTreeListener {
 	 */
 	void exitVardec(QAALParser.VardecContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link QAALParser#ro_params}.
+	 * @param ctx the parse tree
+	 */
+	void enterRo_params(QAALParser.Ro_paramsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link QAALParser#ro_params}.
+	 * @param ctx the parse tree
+	 */
+	void exitRo_params(QAALParser.Ro_paramsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link QAALParser#reg_params}.
+	 * @param ctx the parse tree
+	 */
+	void enterReg_params(QAALParser.Reg_paramsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link QAALParser#reg_params}.
+	 * @param ctx the parse tree
+	 */
+	void exitReg_params(QAALParser.Reg_paramsContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link QAALParser#cs_dec}.
 	 * @param ctx the parse tree
 	 */
@@ -106,6 +126,16 @@ public interface QAALListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCs_dec(QAALParser.Cs_decContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link QAALParser#cs_type}.
+	 * @param ctx the parse tree
+	 */
+	void enterCs_type(QAALParser.Cs_typeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link QAALParser#cs_type}.
+	 * @param ctx the parse tree
+	 */
+	void exitCs_type(QAALParser.Cs_typeContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code CsExp}
 	 * labeled alternative in {@link QAALParser#exp}.
@@ -187,25 +217,15 @@ public interface QAALListener extends ParseTreeListener {
 	 */
 	void exitAngle_rotation(QAALParser.Angle_rotationContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link QAALParser#measurement}.
+	 * Enter a parse tree produced by {@link QAALParser#args}.
 	 * @param ctx the parse tree
 	 */
-	void enterMeasurement(QAALParser.MeasurementContext ctx);
+	void enterArgs(QAALParser.ArgsContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link QAALParser#measurement}.
+	 * Exit a parse tree produced by {@link QAALParser#args}.
 	 * @param ctx the parse tree
 	 */
-	void exitMeasurement(QAALParser.MeasurementContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link QAALParser#label}.
-	 * @param ctx the parse tree
-	 */
-	void enterLabel(QAALParser.LabelContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link QAALParser#label}.
-	 * @param ctx the parse tree
-	 */
-	void exitLabel(QAALParser.LabelContext ctx);
+	void exitArgs(QAALParser.ArgsContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code UncondJump}
 	 * labeled alternative in {@link QAALParser#jump}.
@@ -243,15 +263,51 @@ public interface QAALListener extends ParseTreeListener {
 	 */
 	void exitIfGtrJump(QAALParser.IfGtrJumpContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link QAALParser#cs_exp}.
+	 * Enter a parse tree produced by {@link QAALParser#label}.
 	 * @param ctx the parse tree
 	 */
-	void enterCs_exp(QAALParser.Cs_expContext ctx);
+	void enterLabel(QAALParser.LabelContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link QAALParser#cs_exp}.
+	 * Exit a parse tree produced by {@link QAALParser#label}.
 	 * @param ctx the parse tree
 	 */
-	void exitCs_exp(QAALParser.Cs_expContext ctx);
+	void exitLabel(QAALParser.LabelContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code CsJump}
+	 * labeled alternative in {@link QAALParser#cs_exp}.
+	 * @param ctx the parse tree
+	 */
+	void enterCsJump(QAALParser.CsJumpContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code CsJump}
+	 * labeled alternative in {@link QAALParser#cs_exp}.
+	 * @param ctx the parse tree
+	 */
+	void exitCsJump(QAALParser.CsJumpContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code CsRand}
+	 * labeled alternative in {@link QAALParser#cs_exp}.
+	 * @param ctx the parse tree
+	 */
+	void enterCsRand(QAALParser.CsRandContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code CsRand}
+	 * labeled alternative in {@link QAALParser#cs_exp}.
+	 * @param ctx the parse tree
+	 */
+	void exitCsRand(QAALParser.CsRandContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code CsSet}
+	 * labeled alternative in {@link QAALParser#cs_exp}.
+	 * @param ctx the parse tree
+	 */
+	void enterCsSet(QAALParser.CsSetContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code CsSet}
+	 * labeled alternative in {@link QAALParser#cs_exp}.
+	 * @param ctx the parse tree
+	 */
+	void exitCsSet(QAALParser.CsSetContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code IdfrArith}
 	 * labeled alternative in {@link QAALParser#arithmetic}.
@@ -301,23 +357,13 @@ public interface QAALListener extends ParseTreeListener {
 	 */
 	void exitCombArith(QAALParser.CombArithContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link QAALParser#angle_dec}.
+	 * Enter a parse tree produced by {@link QAALParser#variable}.
 	 * @param ctx the parse tree
 	 */
-	void enterAngle_dec(QAALParser.Angle_decContext ctx);
+	void enterVariable(QAALParser.VariableContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link QAALParser#angle_dec}.
+	 * Exit a parse tree produced by {@link QAALParser#variable}.
 	 * @param ctx the parse tree
 	 */
-	void exitAngle_dec(QAALParser.Angle_decContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link QAALParser#args}.
-	 * @param ctx the parse tree
-	 */
-	void enterArgs(QAALParser.ArgsContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link QAALParser#args}.
-	 * @param ctx the parse tree
-	 */
-	void exitArgs(QAALParser.ArgsContext ctx);
+	void exitVariable(QAALParser.VariableContext ctx);
 }

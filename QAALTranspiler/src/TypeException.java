@@ -78,13 +78,6 @@ public class TypeException extends RuntimeException
         return this;
     }
 
-    // A method to produce an exception for undefined parameter or local variable name
-    public TypeException undefinedVarError()
-    {
-        msg = "Unknown variable name";
-        return this;
-    }
-
     // A method to produce an exception related to mis-typed comparisons of integer values
     public TypeException comparisonError()
     {
@@ -135,27 +128,6 @@ public class TypeException extends RuntimeException
         return this;
     }
 
-    // A method to produce an exception related to assignment.
-    public TypeException assignmentError()
-    {
-        msg = "Incompatible types in assignment";
-        return this;
-    }
-
-    // A method to produce an exception related to argument list mismatches.
-    public TypeException argumentNumberError()
-    {
-        msg = "Invalid # of arguments in invocation";
-        return this;
-    }
-
-    // A method to produce an exception related to argument type mismatches.
-    public TypeException argumentError()
-    {
-        msg = "Invalid argument type in invocation";
-        return this;
-    }
-
     // A method to produce an exception related to print (expression not an int, space, or newline).
     public TypeException printError()
     {
@@ -173,6 +145,74 @@ public class TypeException extends RuntimeException
 
     public TypeException operandError(){
         msg = "Registers initialised at the start of the program cannot be operands";
+        return this;
+    }
+
+    public TypeException unknownOperandError(){
+        msg = "The operand name was not found in the signature of the subroutine";
+        return this;
+    }
+
+    public TypeException unusedParameterError(){
+        msg = "A parameter is not declared as operand in the subroutine";
+        return this;
+    }
+
+    // A method to produce an exception for undefined parameter or local variable name
+    public TypeException undefinedVarError()
+    {
+        msg = "Unknown variable name";
+        return this;
+    }
+
+    // A method to produce an exception related to assignment.
+    public TypeException assignmentError()
+    {
+        msg = "Incompatible types in assignment";
+        return this;
+    }
+
+    public TypeException randomisedVarError()
+    {
+        msg = "Variable to be randomised is not a bit or a register";
+        return this;
+    }
+
+    public TypeException invalidJumpVariableError()
+    {
+        msg = "Variable used in the jump statement has an invalid type";
+        return this;
+    }
+
+    public TypeException mismatchedJumpTypesError()
+    {
+        msg = "The two compared variables have mismatched types";
+        return this;
+    }
+
+    public TypeException labelTypeError()
+    {
+        msg = "The provided identifier is not a label";
+        return this;
+    }
+
+    public TypeException indexingError()
+    {
+        msg = "Non-register cannot be indexed";
+        return this;
+    }
+
+    // A method to produce an exception related to argument list mismatches.
+    public TypeException argumentNumberError()
+    {
+        msg = "Invalid # of arguments in invocation";
+        return this;
+    }
+
+    // A method to produce an exception related to argument type mismatches.
+    public TypeException argumentError()
+    {
+        msg = "Invalid argument type in invocation";
         return this;
     }
 

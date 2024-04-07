@@ -123,6 +123,30 @@ public class QAALBaseListener implements QAALListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterRo_params(QAALParser.Ro_paramsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRo_params(QAALParser.Ro_paramsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterReg_params(QAALParser.Reg_paramsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReg_params(QAALParser.Reg_paramsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterCs_dec(QAALParser.Cs_decContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -130,6 +154,18 @@ public class QAALBaseListener implements QAALListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCs_dec(QAALParser.Cs_decContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCs_type(QAALParser.Cs_typeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCs_type(QAALParser.Cs_typeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -219,25 +255,13 @@ public class QAALBaseListener implements QAALListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMeasurement(QAALParser.MeasurementContext ctx) { }
+	@Override public void enterArgs(QAALParser.ArgsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMeasurement(QAALParser.MeasurementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterLabel(QAALParser.LabelContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLabel(QAALParser.LabelContext ctx) { }
+	@Override public void exitArgs(QAALParser.ArgsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -279,13 +303,49 @@ public class QAALBaseListener implements QAALListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCs_exp(QAALParser.Cs_expContext ctx) { }
+	@Override public void enterLabel(QAALParser.LabelContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitCs_exp(QAALParser.Cs_expContext ctx) { }
+	@Override public void exitLabel(QAALParser.LabelContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCsJump(QAALParser.CsJumpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCsJump(QAALParser.CsJumpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCsRand(QAALParser.CsRandContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCsRand(QAALParser.CsRandContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCsSet(QAALParser.CsSetContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCsSet(QAALParser.CsSetContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -339,25 +399,13 @@ public class QAALBaseListener implements QAALListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAngle_dec(QAALParser.Angle_decContext ctx) { }
+	@Override public void enterVariable(QAALParser.VariableContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAngle_dec(QAALParser.Angle_decContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterArgs(QAALParser.ArgsContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitArgs(QAALParser.ArgsContext ctx) { }
+	@Override public void exitVariable(QAALParser.VariableContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

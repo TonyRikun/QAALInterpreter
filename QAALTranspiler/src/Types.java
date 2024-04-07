@@ -1,6 +1,6 @@
 public enum Types {
 
-    BIT, QUBIT, INT, BOOL, UNIT, REG, QREG, ANGLE
+    BIT, QUBIT, INT, UNIT, REG, QREG, ANGLE, LABEL
 
 }
 

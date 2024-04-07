@@ -64,11 +64,29 @@ public interface QAALVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVardec(QAALParser.VardecContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link QAALParser#ro_params}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRo_params(QAALParser.Ro_paramsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link QAALParser#reg_params}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReg_params(QAALParser.Reg_paramsContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link QAALParser#cs_dec}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitCs_dec(QAALParser.Cs_decContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link QAALParser#cs_type}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCs_type(QAALParser.Cs_typeContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code CsExp}
 	 * labeled alternative in {@link QAALParser#exp}.
@@ -117,17 +135,11 @@ public interface QAALVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAngle_rotation(QAALParser.Angle_rotationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link QAALParser#measurement}.
+	 * Visit a parse tree produced by {@link QAALParser#args}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMeasurement(QAALParser.MeasurementContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link QAALParser#label}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLabel(QAALParser.LabelContext ctx);
+	T visitArgs(QAALParser.ArgsContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code UncondJump}
 	 * labeled alternative in {@link QAALParser#jump}.
@@ -150,11 +162,32 @@ public interface QAALVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIfGtrJump(QAALParser.IfGtrJumpContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link QAALParser#cs_exp}.
+	 * Visit a parse tree produced by {@link QAALParser#label}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitCs_exp(QAALParser.Cs_expContext ctx);
+	T visitLabel(QAALParser.LabelContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code CsJump}
+	 * labeled alternative in {@link QAALParser#cs_exp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCsJump(QAALParser.CsJumpContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code CsRand}
+	 * labeled alternative in {@link QAALParser#cs_exp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCsRand(QAALParser.CsRandContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code CsSet}
+	 * labeled alternative in {@link QAALParser#cs_exp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCsSet(QAALParser.CsSetContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code IdfrArith}
 	 * labeled alternative in {@link QAALParser#arithmetic}.
@@ -184,15 +217,9 @@ public interface QAALVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCombArith(QAALParser.CombArithContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link QAALParser#angle_dec}.
+	 * Visit a parse tree produced by {@link QAALParser#variable}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAngle_dec(QAALParser.Angle_decContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link QAALParser#args}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArgs(QAALParser.ArgsContext ctx);
+	T visitVariable(QAALParser.VariableContext ctx);
 }

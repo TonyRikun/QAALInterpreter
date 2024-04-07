@@ -1,19 +1,38 @@
 import org.antlr.v4.runtime.misc.Pair;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class QAALChecker extends QAALBaseVisitor<Types>
 {
-    private final HashSet<String> functionNames = new HashSet<>();
-    private HashMap<String, Types> programRegisters = new HashMap<>();
-    private final Stack<HashMap<String, Types>> myVariablesStack = new Stack<>();
+    private final HashMap<String, ArrayList<Types>> functionNames = new HashMap<>();
+    private HashMap<String, Types> globalIdfrs = new HashMap<>();
+    private HashMap<String, Types> localIdfrs = new HashMap<>();
+    private HashSet<String> params = new HashSet<>();
+//    private final Stack<HashMap<String, Types>> identifiersStack = new Stack<>();
+    private void paramsCheck(String name){
+        if (globalIdfrs.containsKey(name)) throw new TypeException().duplicatedVarError();
+        if (localIdfrs.containsKey(name)) throw new TypeException().duplicatedVarError();
+        if (functionNames.containsKey(name)) throw new TypeException().clashedVarError();
+    }
+
+    private Types varType(String name){
+        if (globalIdfrs.containsKey(name)) return globalIdfrs.get(name);
+        if (localIdfrs.containsKey(name)) return localIdfrs.get(name);
+        else throw new TypeException().undefinedVarError();
+    }
+
     @Override public Types visitProg(QAALParser.ProgContext ctx) {
         for (QAALParser.Subroutines_decContext dec : ctx.dec().subroutines_dec()) {
-            if (functionNames.contains(dec.Idfr().getText())) {
+            if (functionNames.containsKey(dec.Idfr().getText())) {
                 throw new TypeException().duplicatedFuncError();
             }
-            functionNames.add(dec.Idfr().getText());
+            ArrayList<Types> paramsTypes = new ArrayList<>();
+            for (QAALParser.Cs_typeContext type : dec.vardec().ro_params().cs_type()){
+                paramsTypes.add(visit(type)); //Adds all declared, read-only parameter types, so that later it would be possible to check during function invocation if the argument type matches
+            }
+            functionNames.put(dec.Idfr().getText(), paramsTypes);
         }
         for (QAALParser.Additional_regContext reg : ctx.dec().additional_reg()){
             visit(reg);
@@ -23,62 +42,32 @@ public class QAALChecker extends QAALBaseVisitor<Types>
         }
         visit(ctx.body());
         for (QAALParser.OutputContext out : ctx.output()){
-            if (!programRegisters.containsKey(out.Idfr().getText())){
+            if (!globalIdfrs.containsKey(out.Idfr().getText())){
                 throw new TypeException().undefinedVarError();
             }
-            Types objectType = programRegisters.get(out.Idfr().getText());
+            Types objectType = globalIdfrs.get(out.Idfr().getText());
             int declaredType = ((TerminalNode) out.getChild(0)).getSymbol().getType();
             if ((declaredType == QAALParser.Bit && objectType != Types.BIT) || (declaredType == QAALParser.Reg && objectType != Types.REG)){
                 throw new TypeException().outputTypeError();
             }
         }
-//        for (QAALParser.DecContext dec : ctx.dec()) {
-//            if (functionNames.containsKey(dec.Idfr().getText())) {
-//                throw new TypeException().duplicatedFuncError();
-//            }
-//            functionNames.put(dec.Idfr().getText(), new Pair<>(visit(dec.type()), dec));
-//        }
-//        for (QAALParser.DecContext dec : ctx.dec()){ //Makes sure you don't check visited functions twice
-//            String funcName = dec.Idfr().getText();
-//            if (functionNames.get(funcName).a != visit(dec)) {
-//                throw new TypeException().functionBodyError();
-//            }
-//        }
         return Types.UNIT;
     }
 
     @Override
     public Types visitDec(QAALParser.DecContext ctx) {
-        return super.visitDec(ctx);
+        throw new RuntimeException("Shouldn't be here!");
     }
-
-//        @Override public Types visitDec(QAALParser.DecContext ctx) {
-//        myVariablesStack.push(new HashMap<>(varsParams));
-//        varsParams.clear();
-//        QAALParser.BodyContext body = ctx.body();
-//        QAALParser.VardecContext vardec = ctx.vardec();
-//        for (int i = 0; i < vardec.Idfr().size(); i++){
-//            Types declaredType = visit(vardec.type(i));
-//            String paramIdfr = vardec.Idfr(i).getText();
-//            paramVarCheck(paramIdfr, declaredType);
-//            varsParams.put(paramIdfr, declaredType);
-//        }
-//        for (int i = 0; i < body.Idfr().size(); i++){
-//            Types declaredType = visit(body.type(i));
-//            String varIdfr = body.Idfr(i).getText();
-//            paramVarCheck(varIdfr, declaredType);
-//            if (declaredType != visit(body.exp(i))) throw new TypeException().assignmentError();
-//            varsParams.put(varIdfr, declaredType);
-//        }
-//        Types returnValue = visit(body);
-//        varsParams.clear();
-//        varsParams = myVariablesStack.pop();
-//        return returnValue;
-//    }
 
     @Override
     public Types visitBody(QAALParser.BodyContext ctx) {
-
+        for (QAALParser.Cs_decContext cs : ctx.cs_dec()){
+            visit(cs);
+        }
+        for (QAALParser.ExpContext exp : ctx.exp()){
+            visit(exp);
+        }
+        localIdfrs.clear();
         return Types.UNIT;
     }
 
@@ -89,9 +78,6 @@ public class QAALChecker extends QAALBaseVisitor<Types>
 
     @Override
     public Types visitAdditional_reg(QAALParser.Additional_regContext ctx) { //Checking if the registers' names are not clashing and if they are not declared as operands
-        if (ctx.Operand() != null){
-            throw new TypeException().operandError();
-        }
         String registerName;
         boolean registerBool = ctx.reg_dec() != null; //Checks if the object is a single or multiple bit/qubit register
         Types registerType;
@@ -103,320 +89,312 @@ public class QAALChecker extends QAALBaseVisitor<Types>
             registerName = ctx.bit_dec().Idfr().getText();
             registerType = ctx.bit_dec().Bit() == null ? Types.QUBIT : Types.BIT;
         }
-        if (programRegisters.containsKey(registerName)){
-            throw new TypeException().duplicatedVarError();
+        if (ctx.getParent() instanceof QAALParser.DecContext){                              //If the declaration of registers is happening in the beginning of the program, operands
+            if (ctx.Operand() != null){                                                     //cannot be declared here. Otherwise, if the declaration is happening in a subroutine and
+                throw new TypeException().operandError();                                   //the register is an operand, the checks are made to make sure it's name is in the signature
+            }                                                                               //of the subroutine. Also, there are checks made to see if all parameters appear as operands
+            paramsCheck(registerName);                                                      //in the declaration section of the subroutine, so that all declared parameters are used
+            globalIdfrs.put(registerName, registerType);
         }
-        if (functionNames.contains(registerName)){
-            throw new TypeException().clashedVarError();
+        else if (ctx.Operand() == null){
+            paramsCheck(registerName);
+            localIdfrs.put(registerName, registerType);
         }
-        programRegisters.put(registerName, registerType);
+        else{
+            if (!params.contains(registerName)) throw new TypeException().unknownOperandError();
+            params.remove(registerName);
+            localIdfrs.put(registerName, registerType);
+            functionNames.get(((QAALParser.Subroutines_decContext) ctx.getParent()).Idfr().getText()).add(registerType);
+        }
+        if (!params.isEmpty()) throw new TypeException().unusedParameterError();
         return Types.UNIT;
     }
 
     @Override
     public Types visitSubroutines_dec(QAALParser.Subroutines_decContext ctx) {
-        return super.visitSubroutines_dec(ctx);
+        visit(ctx.vardec());
+        for (QAALParser.Additional_regContext reg : ctx.additional_reg()){
+            visit(reg);
+        }
+        visit(ctx.body());
+        return Types.UNIT;
     }
 
     @Override
     public Types visitReg_dec(QAALParser.Reg_decContext ctx) {
-        return super.visitReg_dec(ctx);
+        throw new RuntimeException("Shouldn't be here!");
     }
 
     @Override
     public Types visitBit_dec(QAALParser.Bit_decContext ctx) {
-        return super.visitBit_dec(ctx);
+        throw new RuntimeException("Shouldn't be here!");
     }
 
     @Override
     public Types visitVardec(QAALParser.VardecContext ctx) {
-        return super.visitVardec(ctx);
+        visit(ctx.ro_params());
+        visit(ctx.reg_params());
+        return Types.UNIT;
+    }
+
+    @Override
+    public Types visitRo_params(QAALParser.Ro_paramsContext ctx) {
+        for (int i = 0; i < ctx.Idfr().size(); i++){
+            paramsCheck(ctx.Idfr(i).getText());
+            localIdfrs.put(ctx.Idfr(i).getText(), visit(ctx.cs_type(i)));
+        }
+        return Types.UNIT;
+    }
+
+    @Override
+    public Types visitReg_params(QAALParser.Reg_paramsContext ctx) { //Only adds register parameters to the "params" set.
+        for (TerminalNode idfr : ctx.Idfr()) {
+            paramsCheck(idfr.getText());
+            params.add(idfr.getText());
+        }
+        return Types.UNIT;
     }
 
     @Override
     public Types visitCs_dec(QAALParser.Cs_decContext ctx) {
-        return super.visitCs_dec(ctx);
+        paramsCheck(ctx.Idfr().getText());
+        Types declaredType = visit(ctx.cs_type());
+        if (visit(ctx.arithmetic()) != declaredType) throw new TypeException().assignmentError();
+        localIdfrs.put(ctx.Idfr().getText(), declaredType);
+        return Types.UNIT;
+    }
+
+    @Override
+    public Types visitCs_type(QAALParser.Cs_typeContext ctx) {
+        if (((TerminalNode) ctx.getChild(0)).getSymbol().getType() == QAALParser.Angle) return Types.ANGLE;
+        else return Types.INT;
     }
 
     @Override
     public Types visitCsExp(QAALParser.CsExpContext ctx) {
-        return super.visitCsExp(ctx);
+        visit(ctx.cs_exp());
+        return Types.UNIT;
     }
 
     @Override
     public Types visitRegExp(QAALParser.RegExpContext ctx) {
-        return super.visitRegExp(ctx);
+        String opType;
+        int varSize = ctx.variable().size();
+        if (ctx.quantum_op() != null) opType = "qOp";
+        else if (ctx.Classical_op() != null) opType = "cOp";
+        else opType = "swap";
+
+        if (opType.equals("qOp") && ctx.quantum_op().angle_rotation() != null){
+            if (ctx.quantum_op().angle_rotation().args().arithmetic().size() != 1){
+                throw new TypeException().argumentNumberError();
+            }
+            else if (visit(ctx.quantum_op().angle_rotation().args().arithmetic(0)) != Types.ANGLE){
+                throw new TypeException().argumentError();
+            }
+        }
+
+        if (opType.equals("cOp")){ //Classical
+            switch (ctx.Classical_op().getText()){
+                case "NOT" -> {
+                    if (varSize != 1) throw new TypeException().argumentNumberError();
+                }
+                case "CNOT" -> {
+                    if (varSize != 2) throw new TypeException().argumentNumberError();
+                }
+                case "CCNOT" -> {
+                    if (varSize != 3) throw new TypeException().argumentNumberError();
+                }
+                default -> throw new RuntimeException("Shouldn't be here");
+            }
+        }
+        else if (opType.equals("qOp")){ //Quantum
+            String op = ctx.quantum_op().getText();
+            if (op.charAt(0) != 'C' && varSize != 1){
+                throw new TypeException().argumentNumberError();
+            }
+            else if (op.charAt(0) == 'C' && varSize != 2){
+                throw new TypeException().argumentNumberError();
+            }
+            else if (op.charAt(0) == 'C' && op.charAt(1) == 'C' && varSize != 3){
+                throw new TypeException().argumentNumberError();
+            }
+        }
+        else{ //SWAP
+            if (varSize != 2) throw new TypeException().argumentNumberError();
+        }
+
+        if (!opType.equals("swap")) {
+            for (QAALParser.VariableContext var : ctx.variable()) {
+                Types type = visit(var);
+                if (opType.equals("qOp") && !(type == Types.QREG || type == Types.QUBIT)) {
+                    throw new TypeException().argumentError();
+                } else if (opType.equals("cOp") && !(type == Types.REG || type == Types.BIT)) {
+                    throw new TypeException().argumentError();
+                }
+            }
+        }
+        else if (visit(ctx.variable(0)) != visit(ctx.variable(1))){ //SWAP
+            throw new TypeException().argumentError();
+        }
+
+        return Types.UNIT;
     }
 
     @Override
     public Types visitMzExp(QAALParser.MzExpContext ctx) {
-        return super.visitMzExp(ctx);
+        Types type1 = visit(ctx.variable(0));
+        Types type2 = visit(ctx.variable(1));
+        if (type1 == Types.QREG && type2 == Types.REG){
+            return Types.UNIT;
+        }
+        else if (type1 == Types.QUBIT && type2 == Types.BIT){
+            return Types.UNIT;
+        }
+        else{
+            throw new TypeException().argumentError();
+        }
     }
 
     @Override
     public Types visitInvokeExp(QAALParser.InvokeExpContext ctx) {
-        return super.visitInvokeExp(ctx);
+        ArrayList<Types> paramTypes = functionNames.get(ctx.Idfr().getText());
+        ArrayList<Types> argTypes = new ArrayList<>();
+        for (QAALParser.ArithmeticContext arth : ctx.args().arithmetic()){
+            argTypes.add(visit(arth));
+        }
+        for (QAALParser.VariableContext var : ctx.variable()){
+            argTypes.add(visit(var));
+        }
+        if (argTypes.size() != paramTypes.size()){
+            throw new TypeException().argumentNumberError();
+        }
+        else if (argTypes != paramTypes){
+            throw new TypeException().argumentError();
+        }
+        return Types.UNIT;
     }
 
     @Override
     public Types visitLabelExp(QAALParser.LabelExpContext ctx) {
-        return super.visitLabelExp(ctx);
+        paramsCheck(ctx.label().Idfr().getText());
+        localIdfrs.put(ctx.label().Idfr().getText(), Types.LABEL);
+        return Types.UNIT;
     }
 
     @Override
     public Types visitQuantum_op(QAALParser.Quantum_opContext ctx) {
-        return super.visitQuantum_op(ctx);
+        throw new RuntimeException("Shouldn't be here!");
     }
 
     @Override
     public Types visitAngle_rotation(QAALParser.Angle_rotationContext ctx) {
-        return super.visitAngle_rotation(ctx);
-    }
-
-    @Override
-    public Types visitMeasurement(QAALParser.MeasurementContext ctx) {
-        return super.visitMeasurement(ctx);
+        throw new RuntimeException("Shouldn't be here!");
     }
 
     @Override
     public Types visitLabel(QAALParser.LabelContext ctx) {
-        return super.visitLabel(ctx);
+        if (varType(ctx.Idfr().getText()) != Types.LABEL) throw new TypeException().labelTypeError();
+        return Types.UNIT;
     }
 
     @Override
     public Types visitUncondJump(QAALParser.UncondJumpContext ctx) {
-        return super.visitUncondJump(ctx);
+        visit(ctx.label());
+        return Types.UNIT;
     }
 
     @Override
     public Types visitIfZeroJump(QAALParser.IfZeroJumpContext ctx) {
-        return super.visitIfZeroJump(ctx);
+        Types type = visit(ctx.variable());
+        if (!(type == Types.INT || type == Types.ANGLE || type == Types.BIT || type == Types.REG)){
+            throw new TypeException().invalidJumpVariableError();
+        }
+        else {
+            visit(ctx.label());
+        }
+        return Types.UNIT;
     }
 
     @Override
     public Types visitIfGtrJump(QAALParser.IfGtrJumpContext ctx) {
-        return super.visitIfGtrJump(ctx);
+        Types type1 = visit(ctx.variable(0));
+        Types type2 = visit(ctx.variable(1));
+        if (!(type1 == Types.INT || type1 == Types.ANGLE || type1 == Types.BIT || type1 == Types.REG)){
+            throw new TypeException().invalidJumpVariableError();
+        }
+        else if (type1 != type2){
+            throw new TypeException().mismatchedJumpTypesError();
+        }
+        visit(ctx.label());
+        return Types.UNIT;
     }
 
     @Override
-    public Types visitCs_exp(QAALParser.Cs_expContext ctx) {
-        return super.visitCs_exp(ctx);
+    public Types visitCsJump(QAALParser.CsJumpContext ctx) {
+        visit(ctx.jump());
+        return Types.UNIT;
+    }
+
+    @Override
+    public Types visitCsRand(QAALParser.CsRandContext ctx) {
+        Types type = visit(ctx.variable());
+        if (!(type == Types.BIT || type == Types.REG)){
+            throw new TypeException().randomisedVarError();
+        }
+        return Types.UNIT;
+    }
+
+    @Override
+    public Types visitCsSet(QAALParser.CsSetContext ctx) {
+        Types type = varType(ctx.Idfr().getText());
+        if (type != visit(ctx.arithmetic())) throw new TypeException().assignmentError();
+        return Types.UNIT;
     }
 
     @Override
     public Types visitIdfrArith(QAALParser.IdfrArithContext ctx) {
-        return super.visitIdfrArith(ctx);
+        return varType(ctx.Idfr().getText()); //Only need to check localIdfrs because cs variables are put only there
     }
 
     @Override
     public Types visitIntArith(QAALParser.IntArithContext ctx) {
-        return super.visitIntArith(ctx);
+        return Types.INT;
     }
 
     @Override
     public Types visitPiArith(QAALParser.PiArithContext ctx) {
-        return super.visitPiArith(ctx);
+        return Types.ANGLE;
     }
 
     @Override
     public Types visitCombArith(QAALParser.CombArithContext ctx) {
-        return super.visitCombArith(ctx);
-    }
-
-    @Override
-    public Types visitAngle_dec(QAALParser.Angle_decContext ctx) {
-        return super.visitAngle_dec(ctx);
+        if (visit(ctx.arithmetic(0)) == Types.INT && visit(ctx.arithmetic(1)) == Types.INT){
+            return Types.INT;
+        }
+        else{
+            return Types.ANGLE;
+        }
     }
 
     @Override
     public Types visitArgs(QAALParser.ArgsContext ctx) {
-        return super.visitArgs(ctx);
+        throw new RuntimeException("Shouldn't be here!");
+    }
+
+    @Override
+    public Types visitVariable(QAALParser.VariableContext ctx) {
+        Types type = varType(ctx.Idfr().getText());
+        if (!(type == Types.REG || type == Types.QREG) && ctx.Index() != null){
+            throw new TypeException().indexingError();
+        }
+        else if (type == Types.REG && ctx.Index() != null){
+            return Types.BIT;
+        }
+        else if (type == Types.QREG && ctx.Index() != null){
+            return Types.QUBIT;
+        }
+        else {
+            return type;
+        }
     }
 }
-
-
-
-
-//    @Override
-//    public Types visitVardec(QAALParser.VardecContext ctx) {
-//        throw new RuntimeException("Shouldn't be here");
-//    }
-//    @Override
-//    public Types visitBody(QAALParser.BodyContext ctx) {
-//        return visit(ctx.ene());
-//    }
-
-//    @Override
-//    public Types visitEne(QAALParser.EneContext ctx) {
-//        ArrayList<Types> expReturns = new ArrayList<Types>();
-//        for (int i = 0; i < ctx.exp().size(); i++){
-//            expReturns.add(visit(ctx.exp(i)));
-//        }
-//        return expReturns.get(expReturns.size() - 1);
-//    }
-
-//    @Override
-//    public Types visitIdfrExp(QAALParser.IdfrExpContext ctx) {
-//        if (varsParams.containsKey(ctx.Idfr().getText())) {
-//            return varsParams.get(ctx.Idfr().getText());
-//        }
-//        else {
-//            throw new TypeException().undefinedVarError();
-//        }
-//    }
-
-
-//    @Override public Types visitIntExp(QAALParser.IntExpContext ctx) {
-//        return Types.INT;
-//    }
-
-//    @Override
-//    public Types visitBoolExp(QAALParser.BoolExpContext ctx) {
-//        return Types.BOOL;
-//    }
-
-//    @Override
-//    public Types visitAssignExp(QAALParser.AssignExpContext ctx) {
-//        Types returnType;
-//        if (varsParams.containsKey(ctx.Idfr().getText())) {
-//            returnType = varsParams.get(ctx.Idfr().getText());
-//            if (returnType != visit(ctx.exp())){
-//                throw new TypeException().assignmentError();
-//            }
-//            return Types.UNIT;
-//        }
-//        else{
-//            throw new TypeException().undefinedVarError();
-//        }
-//    }
-
-//    @Override
-//    public Types visitBinopExp(QAALParser.BinopExpContext ctx) {
-//        Types operand1Type = visit(ctx.exp(0));
-//        Types operand2Type = visit(ctx.exp(1));
-//        return switch (((TerminalNode) (ctx.binop().getChild(0))).getSymbol().getType()){
-//            case QAALParser.CompExp -> {
-//                if (operand1Type != Types.INT || operand2Type != Types.INT){
-//                    throw new TypeException().comparisonError();
-//                }
-//                yield Types.BOOL;
-//            }
-//            case QAALParser.NumExp -> {
-//                if (operand1Type != Types.INT || operand2Type != Types.INT){
-//                    throw new TypeException().arithmeticError();
-//                }
-//                yield Types.INT;
-//            }
-//            case QAALParser.BooleExp -> {
-//                if (operand1Type != Types.BOOL || operand2Type != Types.BOOL){
-//                    throw new TypeException().logicalError();
-//                }
-//                yield Types.BOOL;
-//            }
-//            default -> throw new RuntimeException("Shouldn't be here");
-//        };
-//    }
-
-//    @Override
-//    public Types visitArgExp(QAALParser.ArgExpContext ctx) {
-//        String funcName = ctx.Idfr().getText();
-//        Pair<Types, QAALParser.DecContext> function;
-//        if (!functionNames.containsKey(funcName)){
-//            throw new TypeException().undefinedFuncError();
-//        }
-//        function = functionNames.get(funcName);
-//        QAALParser.VardecContext params = function.b.vardec();
-//        if (params.type().size() != ctx.args().exp().size()) {
-//            throw new TypeException().argumentNumberError();
-//        }
-//        for (int i = 0; i < params.type().size(); i++) {
-//            if (visit(ctx.args().exp(i)) != visit(params.type(i))) {
-//                throw new TypeException().argumentError();
-//            }
-//        }
-//        return function.a;
-//    }
-
-//    @Override
-//    public Types visitBlockExp(QAALParser.BlockExpContext ctx) {
-//        return visit(ctx.block());
-//    }
-//    @Override
-//    public Types visitIfExp(QAALParser.IfExpContext ctx) {
-//        if (visit(ctx.exp()) != Types.BOOL){
-//            throw new TypeException().conditionError();
-//        }
-//        else if (visit(ctx.block(0)) != visit(ctx.block(1))){
-//            throw new TypeException().branchMismatchError();
-//        }
-//        else{
-//            return visit(ctx.block(0));
-//        }
-//    }
-//    @Override
-//    public Types visitWhileExp(QAALParser.WhileExpContext ctx) {
-//        if (visit(ctx.exp()) != Types.BOOL){
-//            throw new TypeException().conditionError();
-//        }
-//        else if (visit(ctx.block()) != Types.UNIT){
-//            throw new TypeException().loopBodyError();
-//        }
-//        else {
-//            return Types.UNIT;
-//        }
-//    }
-//    @Override
-//    public Types visitRepeatExp(QAALParser.RepeatExpContext ctx) {
-//        if (visit(ctx.exp()) != Types.BOOL){
-//            throw new TypeException().conditionError();
-//        }
-//        else if (visit(ctx.block()) != Types.UNIT){
-//            throw new TypeException().loopBodyError();
-//        }
-//        else {
-//            return Types.UNIT;
-//        }
-//    }
-//    @Override
-//    public Types visitPrintExp(QAALParser.PrintExpContext ctx) {
-//        if (visit(ctx.exp()) == Types.INT){
-//            return Types.UNIT;
-//        }
-//        else if (ctx.exp() instanceof QAALParser.NewlineExpContext || ctx.exp() instanceof QAALParser.SpaceExpContext) {
-//            return Types.UNIT;
-//        }
-//        else {
-//            throw new TypeException().printError();
-//        }
-//    }
-//    @Override
-//    public Types visitSpaceExp(QAALParser.SpaceExpContext ctx) {
-//        return Types.UNIT;
-//    }
-//    @Override
-//    public Types visitNewlineExp(QAALParser.NewlineExpContext ctx) {
-//        return Types.UNIT;
-//    }
-//    @Override public Types visitSkipExp(QAALParser.SkipExpContext ctx){
-//        return Types.UNIT;
-//    }
-//    @Override public Types visitArgs(QAALParser.ArgsContext ctx){ //Needs to be finished when done with Idfr and ArgExp are done
-//        throw new RuntimeException("Shouldn't be here");
-//    }
-//    @Override
-//    public Types visitBinop(QAALParser.BinopContext ctx) {
-//        throw new RuntimeException("Should not be here!");
-//    }
-//
-//    @Override
-//    public Types visitType(QAALParser.TypeContext ctx) {
-//        return switch (((TerminalNode) ctx.getChild(0)).getSymbol().getType()) {
-//            case QAALParser.Int -> Types.INT;
-//            case QAALParser.Bool -> Types.BOOL;
-//            default -> Types.UNIT;
-//        };
-//    }
-//    @Override
-//    public Types visitBoolit(QAALParser.BoolitContext ctx) {
-//        throw new RuntimeException("Shouldn't be here");
-//    }
