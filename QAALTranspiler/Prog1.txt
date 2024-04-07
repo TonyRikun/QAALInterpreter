@@ -1,0 +1,4 @@
+bit a
+H a
+stop
+output a
