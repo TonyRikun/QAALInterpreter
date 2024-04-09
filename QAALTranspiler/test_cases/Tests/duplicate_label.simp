@@ -1,0 +1,10 @@
+qubit q
+bit a
+@start:
+	Rz (pi) q
+@start:
+	Rz (pi) q
+!jump @start
+stop
+output bit a
+ 

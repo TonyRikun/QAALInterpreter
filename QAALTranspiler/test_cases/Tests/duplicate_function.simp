@@ -1,0 +1,12 @@
+bit a
+define fun1 b :
+	operand bit b
+	NOT b
+	stop
+define fun1 c :
+	operand bit c
+	NOT c
+	stop
+fun1 a
+stop
+output bit a

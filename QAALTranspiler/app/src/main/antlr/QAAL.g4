@@ -21,20 +21,20 @@ cs_type: Angle | Int;
 exp: '!' cs_exp                                                                     #CsExp //Control statements, all need to start with !
 | (Classical_op | quantum_op | Swap) variable (',' variable)*                       #RegExp //Operations performed on registers and quantum registers
 | 'Mz' variable '->' variable                                                       #MzExp //Measurement of a quantum register into classical register
-| Idfr '(' args? ')' (variable (',' variable)*)                                     #InvokeExp //Invocation of a function
+| Idfr args? (variable (',' variable)*)                                     #InvokeExp //Invocation of a function
 | label ':'                                                                         #LabelExp
 ;
 //For SWAP, need to check if variables are of the same type
 Classical_op: 'NOT' | 'CNOT' | 'CCNOT';
 quantum_op: angle_rotation | Transformation; //Quantum operations that are either [controlled] rotations around an axis by a specified angle or other gates that don't require an angle parameter
-angle_rotation: ('Rx' | 'Ry' | 'Rz' | 'CRx' | 'CRy' | 'CRz') '(' args ')';
+angle_rotation: ('Rx' | 'Ry' | 'Rz' | 'CRx' | 'CRy' | 'CRz')  args ;
 Transformation: 'X' | 'Y' | 'Z' | 'H' | 'CX' | 'CY' | 'CZ' | 'CCX';
-args: arithmetic (',' arithmetic)*; //Arguments passed to a subroutine/angle_rotation
+args: '('arithmetic (',' arithmetic)*')'; //Arguments passed to a subroutine/angle_rotation
 
 //Jumps
 jump: 'jump' label                                                                  #UncondJump //Unconditional jump
-| 'if zero' variable ',' label                                                          #IfZeroJump //Jump if the variable is equal to 0
-| 'if gtr' variable ',' variable ',' label                                                  #IfGtrJump //Jump if the first variable is greater than the second one
+| 'jump' 'if' 'zero' variable ',' label                                                          #IfZeroJump //Jump if the variable is equal to 0
+| 'jump' 'if' 'gtr' variable ',' variable ',' label                                                  #IfGtrJump //Jump if the first variable is greater than the second one
 ;
 label: '@' Idfr;
 

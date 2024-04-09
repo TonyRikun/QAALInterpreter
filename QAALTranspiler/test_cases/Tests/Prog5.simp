@@ -1,0 +1,16 @@
+register a: 2 qubits
+register b: 2 bits
+define QFT_2 q :
+	# The quantum Fourier transform, F4 , on two qubits.
+	# We interpret q as a quantum register storing 2-bit integers
+	operand register q: 2 qubits
+	H q[1]
+	Rz((pi/2)) q[0]
+	Rz((pi/2)) q[1]
+	H q[0]
+	SWAP q[0], q[1]
+	stop
+QFT_2 a
+Mz a -> b
+stop
+output register b

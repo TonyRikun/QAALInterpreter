@@ -1,0 +1,18 @@
+qubit a
+qubit b
+bit c
+bit d
+
+define PreparePhiPlus e, f :
+	operand qubit e
+	operand qubit f
+	H e
+	CX e, f
+	stop
+
+PreparePhiPlus a, b
+Mz a -> c
+Mz b -> d
+stop
+output bit c
+output bit d

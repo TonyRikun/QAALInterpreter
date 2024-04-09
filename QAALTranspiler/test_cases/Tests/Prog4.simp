@@ -1,0 +1,12 @@
+bit a
+qubit b
+define ClassicalCtrlX c, q :
+	operand bit c
+	operand qubit q
+	!jump if zero c, @skip
+		X q
+	@skip:
+	stop
+ClassicalCtrlX a, b
+stop
+output bit a

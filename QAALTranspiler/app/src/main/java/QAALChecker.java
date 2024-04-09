@@ -7,6 +7,7 @@ import java.util.*;
 public class QAALChecker extends QAALBaseVisitor<Types>
 {
     private final HashMap<String, ArrayList<Types>> functionNames = new HashMap<>();
+    private HashSet<String> labels = new HashSet<>();
     private HashMap<String, Types> globalIdfrs = new HashMap<>();
     private HashMap<String, Types> localIdfrs = new HashMap<>();
     private HashSet<String> params = new HashSet<>();
@@ -14,6 +15,7 @@ public class QAALChecker extends QAALBaseVisitor<Types>
     private void paramsCheck(String name){
         if (globalIdfrs.containsKey(name)) throw new TypeException().duplicatedVarError();
         if (localIdfrs.containsKey(name)) throw new TypeException().duplicatedVarError();
+        if (labels.contains(name)) throw new TypeException().duplicatedVarError();
         if (functionNames.containsKey(name)) throw new TypeException().clashedVarError();
     }
 
@@ -29,8 +31,10 @@ public class QAALChecker extends QAALBaseVisitor<Types>
                 throw new TypeException().duplicatedFuncError();
             }
             ArrayList<Types> paramsTypes = new ArrayList<>();
-            for (QAALParser.Cs_typeContext type : dec.vardec().ro_params().cs_type()){
-                paramsTypes.add(visit(type)); //Adds all declared, read-only parameter types, so that later it would be possible to check during function invocation if the argument type matches
+            if (dec.vardec().ro_params() != null) {
+                for (QAALParser.Cs_typeContext type : dec.vardec().ro_params().cs_type()) {
+                    paramsTypes.add(visit(type)); //Adds all declared, read-only parameter types, so that later it would be possible to check during function invocation if the argument type matches
+                }
             }
             functionNames.put(dec.Idfr().getText(), paramsTypes);
         }
@@ -43,7 +47,7 @@ public class QAALChecker extends QAALBaseVisitor<Types>
         visit(ctx.body());
         for (QAALParser.OutputContext out : ctx.output()){
             Types varType = varType(out.Idfr().getText());
-            int declaredType = ((TerminalNode) out.getChild(0)).getSymbol().getType();
+            int declaredType = ((TerminalNode) out.getChild(1)).getSymbol().getType();
             if ((declaredType == QAALParser.Bit && varType != Types.BIT) || (declaredType == QAALParser.Reg && varType != Types.REG)){
                 throw new TypeException().outputTypeError();
             }
@@ -61,10 +65,19 @@ public class QAALChecker extends QAALBaseVisitor<Types>
         for (QAALParser.Cs_decContext cs : ctx.cs_dec()){
             visit(cs);
         }
-        for (QAALParser.ExpContext exp : ctx.exp()){
-            visit(exp);
+        for (QAALParser.ExpContext exp : ctx.exp()) {
+            if (exp instanceof QAALParser.LabelExpContext) {
+                String labelText = ((QAALParser.LabelExpContext) exp).label().Idfr().getText();
+                paramsCheck(labelText);
+                localIdfrs.put(labelText, Types.LABEL);
+                labels.add(labelText);
+            }
+        }
+        for (QAALParser.ExpContext exp : ctx.exp()) {
+            if (!(exp instanceof QAALParser.LabelExpContext)) visit(exp);
         }
         localIdfrs.clear();
+        labels.clear();
         return Types.UNIT;
     }
 
@@ -103,7 +116,6 @@ public class QAALChecker extends QAALBaseVisitor<Types>
             localIdfrs.put(registerName, registerType);
             functionNames.get(((QAALParser.Subroutines_decContext) ctx.getParent()).Idfr().getText()).add(registerType);
         }
-        if (!params.isEmpty()) throw new TypeException().unusedParameterError();
         return Types.UNIT;
     }
 
@@ -113,6 +125,7 @@ public class QAALChecker extends QAALBaseVisitor<Types>
         for (QAALParser.Additional_regContext reg : ctx.additional_reg()){
             visit(reg);
         }
+        if (!params.isEmpty()) throw new TypeException().unusedParameterError();
         visit(ctx.body());
         return Types.UNIT;
     }
@@ -129,7 +142,7 @@ public class QAALChecker extends QAALBaseVisitor<Types>
 
     @Override
     public Types visitVardec(QAALParser.VardecContext ctx) {
-        visit(ctx.ro_params());
+        if (ctx.ro_params() != null) visit(ctx.ro_params());
         visit(ctx.reg_params());
         return Types.UNIT;
     }
@@ -257,8 +270,10 @@ public class QAALChecker extends QAALBaseVisitor<Types>
         if (!functionNames.containsKey(ctx.Idfr().getText())) throw new TypeException().undefinedFuncError();
         ArrayList<Types> paramTypes = functionNames.get(ctx.Idfr().getText());
         ArrayList<Types> argTypes = new ArrayList<>();
-        for (QAALParser.ArithmeticContext arth : ctx.args().arithmetic()){
-            argTypes.add(visit(arth));
+        if (ctx.args() != null){
+            for (QAALParser.ArithmeticContext arth : ctx.args().arithmetic()) {
+                argTypes.add(visit(arth));
+            }
         }
         for (QAALParser.VariableContext var : ctx.variable()){
             argTypes.add(visit(var));
@@ -266,7 +281,7 @@ public class QAALChecker extends QAALBaseVisitor<Types>
         if (argTypes.size() != paramTypes.size()){
             throw new TypeException().argumentNumberError();
         }
-        else if (argTypes != paramTypes){
+        else if (!argTypes.equals(paramTypes)){
             throw new TypeException().argumentError();
         }
         return Types.UNIT;
@@ -274,9 +289,7 @@ public class QAALChecker extends QAALBaseVisitor<Types>
 
     @Override
     public Types visitLabelExp(QAALParser.LabelExpContext ctx) {
-        paramsCheck(ctx.label().Idfr().getText());
-        localIdfrs.put(ctx.label().Idfr().getText(), Types.LABEL);
-        return Types.UNIT;
+        throw new RuntimeException("Shouldn't be here!");
     }
 
     @Override

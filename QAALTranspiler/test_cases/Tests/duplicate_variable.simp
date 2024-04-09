@@ -1,0 +1,5 @@
+bit a
+qubit a
+H b
+stop
+output bit a

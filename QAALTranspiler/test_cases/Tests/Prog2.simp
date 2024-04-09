@@ -1,0 +1,4 @@
+bit a
+!randomise a
+stop
+output bit a
