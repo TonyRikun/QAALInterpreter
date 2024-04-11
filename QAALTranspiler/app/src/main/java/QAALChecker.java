@@ -395,17 +395,22 @@ public class QAALChecker extends QAALBaseVisitor<Types>
     @Override
     public Types visitVariable(QAALParser.VariableContext ctx) {
         Types type = varType(ctx.Idfr().getText());
-        if (!(type == Types.REG || type == Types.QREG) && ctx.Index() != null){
+        if (!(type == Types.REG || type == Types.QREG) && ctx.index() != null){
             throw new TypeException().indexingError();
         }
-        else if (type == Types.REG && ctx.Index() != null){
+        else if (type == Types.REG && ctx.index() != null){
             return Types.BIT;
         }
-        else if (type == Types.QREG && ctx.Index() != null){
+        else if (type == Types.QREG && ctx.index() != null){
             return Types.QUBIT;
         }
         else {
             return type;
         }
+    }
+
+    @Override
+    public Types visitIndex(QAALParser.IndexContext ctx) {
+        throw new RuntimeException("Shouldn't be here!");
     }
 }

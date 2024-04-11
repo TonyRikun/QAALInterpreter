@@ -4,13 +4,13 @@ prog: dec body Stop output+ EOF; //Main program - consists of declarations secti
 //prog
 dec: additional_reg* subroutines_dec*; //Declaration of input registers, additional registers, and subroutines
 body: cs_dec* exp+;
-output: 'output' (Bit Idfr | Reg Idfr Index?);
+output: 'output' (Bit Idfr | Reg Idfr index?);
 //dec
 additional_reg: Operand? (reg_dec | bit_dec); //Declaration of additional registers that can also be operands
 subroutines_dec: 'define' Idfr vardec ':' additional_reg* body Stop; //Declaration of subroutine, with read-only control statement parameters and operands
 reg_dec: Reg Idfr ':' Intlit (Bits | Qubits); //Declaration of register consisting of bits/qubits
 bit_dec: (Bit | Qubit) Idfr; //Declaration of a register that holds a single bit or qubit
-vardec: ro_params? reg_params?; //Declaration of parameters
+vardec: ro_params? reg_params; //Declaration of parameters
 ro_params: '(' cs_type Idfr (',' cs_type Idfr)*')'; //Declaration of read-only parameters
 reg_params: Idfr (',' Idfr)*; //Declaration of register parameters
 //body
@@ -21,7 +21,7 @@ cs_type: Angle | Int;
 exp: '!' cs_exp                                                                     #CsExp //Control statements, all need to start with !
 | (Classical_op | quantum_op | Swap) variable (',' variable)*                       #RegExp //Operations performed on registers and quantum registers
 | 'Mz' variable '->' variable                                                       #MzExp //Measurement of a quantum register into classical register
-| Idfr args? (variable (',' variable)*)                                     #InvokeExp //Invocation of a function
+| Idfr args? (variable (',' variable)*)                                             #InvokeExp //Invocation of a function
 | label ':'                                                                         #LabelExp
 ;
 //For SWAP, need to check if variables are of the same type
@@ -33,14 +33,14 @@ args: '('arithmetic (',' arithmetic)*')'; //Arguments passed to a subroutine/ang
 
 //Jumps
 jump: 'jump' label                                                                  #UncondJump //Unconditional jump
-| 'jump' 'if' 'zero' variable ',' label                                                          #IfZeroJump //Jump if the variable is equal to 0
-| 'jump' 'if' 'gtr' variable ',' variable ',' label                                                  #IfGtrJump //Jump if the first variable is greater than the second one
+| 'jump' 'if' 'zero' variable ',' label                                             #IfZeroJump //Jump if the variable is equal to 0
+| 'jump' 'if' 'gtr' variable ',' variable ',' label                                 #IfGtrJump //Jump if the first variable is greater than the second one
 ;
 label: '@' Idfr;
 
 //Control statements
 cs_exp: jump                                                                        #CsJump //Conditional or uncoditional jumps
-| 'randomise' variable                                                                #CsRand //Randomise function
+| 'randomise' variable                                                              #CsRand //Randomise function
 | 'set' Idfr ':=' arithmetic                                                        #CsSet //Setting control statement variables to a value
 ;
 
@@ -49,13 +49,12 @@ arithmetic: Idfr                                                                
 | Pi                                                                                #PiArith //Arithmetic statement where the expression is a value of pi
 | ('(' arithmetic NumExp arithmetic ')')                                            #CombArith //Arithmetic statement where the expression is a combination of above with an additional numeric operator
 ;
-variable: Idfr Index?;
+variable: Idfr index?;
+index: '[' Intlit ']';
 //type: Bit | Qubit | Int | Bool | Unit | Reg | Angle;
-
 Comment: '#' ~('\r' | '\n')* -> skip;
 Swap: 'SWAP';
 NumExp: '+'|'*'|'-'|'/';
-Index: '[' Intlit ']';
 Reg: 'register';
 Bit: 'bit';
 Qubit: 'qubit';

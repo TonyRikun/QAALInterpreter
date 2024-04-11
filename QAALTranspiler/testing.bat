@@ -21,7 +21,7 @@ fc /b output.txt .\test_cases\Answers\%%~nf.simp.answers > nul
     if errorlevel 1 (
         echo Output does not match expected for %%f
     ) else (
-        echo Output matches expected for %%f
+        echo Output matches expected answer for %%f
 		cd ./cpp/QuEst/build
 		nmake
 		.\demo
