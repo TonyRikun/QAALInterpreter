@@ -4,10 +4,16 @@
 #include <array>
 #include <string>
 #include <bitset>
-using namespace std;
+#include <ctime>
+#include <cstdlib>
+#include <vector>
+#include <utility>
+const double PI = 3.141592653589793;
+std::vector<int> ctrls = {0, 1};
+std::vector<int> targs = {2};
 template <size_t N>
 
-bool isZero(std::array<int, N>& myArr){//Don't forget to edit this bit in the code generator - & - and add all of the #include statements
+bool isZero(std::array<int, N>& myArr){
 	for(int i = 0; i < myArr.size(); i++) {
         if(myArr[i] != 0) {
             return false;
@@ -27,8 +33,14 @@ bool compareRegs(std::array<int, N>& myArr1, std::array<int, N>& myArr2) {
     }
 	std::bitset<N> reg1(concatenated1);
 	std::bitset<N> reg2(concatenated2);
-	//int result = (int)(byte.to_ulong());
-    return reg1.to_ulong() > reg2.to_ulong(); //YOU ARE HERE: need to write this in the code generator and LOOK UP and then go back to comparing regs in jump
+    return reg1.to_ulong() > reg2.to_ulong(); 
+}
+
+void quregSwap(QuESTEnv env, Qureg& reg1, Qureg& reg2){
+	Qureg temp = createCloneQureg(reg1, env);
+	cloneQureg(reg1, reg2);
+	cloneQureg(reg2, temp);
+	destroyQureg(temp, env);
 }
 
 void myFunc(QuESTEnv env, Qureg a){
@@ -38,8 +50,10 @@ void myFunc(QuESTEnv env, Qureg a){
 		printf("%d was measured", measure(a, 0));
 		destroyQureg(qubit, env);
 	}
+	
 
 int main() {
+	std::srand((unsigned int)std::time(NULL));
 	
 	// load QuEST
 	QuESTEnv env = createQuESTEnv();
@@ -58,11 +72,38 @@ int main() {
 	std::cout << !myBit;
 	Qureg a = createQureg(1, env);
 	initZeroState(a);
-	myFunc(env, a);
+	//myFunc(env, a);
 	std::array<int, 5> myArr1 = {};
 	std::array<int, 5> myArr2 = {1};
-	std::cout <<  "\n" << compareRegs(myArr2, myArr1) << "\n";
-	if (isZero(myArr1)) std::cout << "HELLO";
+	//std::cout <<  "\n" << compareRegs(myArr2, myArr1) << "\n";
+	//if (isZero(myArr1)) std::cout << "HELLO\n";
+	//bool ran=std::rand() % 2;
+	//std::cout << ran;
+	//bool xor1 = 0;
+	//bool xor2 = 0;
+	//std::cout << "\n XOR" << (xor1 ^ (xor1 & xor2));
+	pauliX(a, 0);
+	hadamard(a, 0);
+	rotateX(a, 0, PI * (1/2));
+	
+	Qureg bitA = createQureg(3, env);
+	initZeroState(bitA);
+	Qureg regB = createQureg(3, env);
+	initZeroState(regB);
+	rotateX(bitA, 0, PI);
+	//controlledRotateX(regB, con, tar, angle);
+	//controlledNot(reg, 0, 1);
+	pauliX(regB, 0);
+	hadamard(regB, 1);
+	ctrls = {0,1};
+	targs = {2};
+	multiControlledMultiQubitNot(regB, ctrls.data(), 2, targs.data(), 1);
+	int d = 5;
+	int t = 6;
+	std::swap(d, t);
+	quregSwap(env, bitA, regB);
+
+	std::cout << "\n" << bitA.to_string();
 	
 	
 	

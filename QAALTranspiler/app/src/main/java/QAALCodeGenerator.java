@@ -14,29 +14,61 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
         else throw new TypeException().undefinedVarError();
     }
 
+    private String getIndex(QAALParser.VariableContext var){ //If var is an indexed register, returns the index, else, returns "0"
+        return var.index() != null ? var.index().Intlit().getText() : "0";
+    }
+
     @Override
     public String visitProg(QAALParser.ProgContext ctx) {
         StringBuilder sb = new StringBuilder();
         sb.append("#include <QuEST.h>\n" +
                 "#include <stdio.h>\n" +
                 "#include <cmath>\n" +
-                "using namespace std;\n" +
+                "#include <array>\n" +
+                "#include <string>\n" +
+                "#include <bitset>\n" +
+                "#include <ctime>\n" +
+                "#include <utility>\n" +
+                "#include <cstdlib>\n" +
+                "const double PI = 3.141592653589793;\n" +
+                "std::vector<int> ctrls = {0, 1};\n" +
+                "std::vector<int> targs = {2};\n" +
                 "template <size_t N>\n" +
-                "bool isZero(std::array<int, N> myArr) {\n" +
+                "bool isZero(std::array<int, N>& myArr) {\n" +
                 "\tfor(int i = 0; i < myArr.size(); i++) {\n" +
                 "\t\tif(myArr[i] != 0) {\n" +
                 "\t\t\treturn false;\n" +
                 "\t\t}\n" +
                 "\t}\n" +
                 "return true;\n" +
-                "}\n");
+                "}\n\n" +
+                "template <size_t N>\n" +
+                "bool compareRegs(std::array<int, N>& myArr1, std::array<int, N>& myArr2) {\n" +
+                "\t// Concatenate the values into a single string\n" +
+                "\tstd::string concatenated1;\n" +
+                "\t\tstd::string concatenated2;\n" +
+                "\tfor (int i = 0; i < myArr1.size(); i++) {\n" +
+                "\t\tconcatenated1 += std::to_string(myArr1[i]);\n" +
+                "\t\tconcatenated2 += std::to_string(myArr2[i]);\n" +
+                "\t}\n" +
+                "\tstd::bitset<N> reg1(concatenated1);\n" +
+                "\tstd::bitset<N> reg2(concatenated2);\n" +
+                "\treturn reg1.to_ulong() > reg2.to_ulong();\n" +
+                "}\n" +
+                "void quregSwap(QuESTEnv env, Qureg& reg1, Qureg& reg2) {\n" +
+                "\tQureg temp = createCloneQureg(reg1, env);\n" +
+                "\tcloneQureg(reg1, reg2);\n" +
+                "\tcloneQureg(reg2, temp);\n" +
+                "\tdestroyQureg(temp, env);\n" +
+                "}\n"
+                );
         for (QAALParser.Subroutines_decContext sub : ctx.dec().subroutines_dec()){
             sb.append(visit(sub));
         }
         sb.append("\n" +
                 "int main() {\n" +
-                "\n" +
-                "QuESTEnv env = createQuESTEnv();\n");
+                "std::srand((unsigned int)std::time(NULL));\n" +
+                "QuESTEnv env = createQuESTEnv();\n\n");
         for (QAALParser.Additional_regContext reg : ctx.dec().additional_reg()){
             sb.append(visit(reg));
         }
@@ -45,7 +77,7 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
             sb.append(visit(out));
         }
         sb.append("destroyQuESTEnv(env);\n" +
-                "  return 0;\n" +
+                "return 0;\n" +
                 "}");
         return sb.toString();
     }
@@ -203,7 +235,81 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
 
     @Override
     public String visitRegExp(QAALParser.RegExpContext ctx) {
-        return "";
+        StringBuilder sb = new StringBuilder();
+        QAALParser.VariableContext var1 = ctx.variable(0);
+        String op;
+        if (ctx.Classical_op() != null) {
+            op = ctx.Classical_op().getText();
+            switch (op){
+                case "NOT" -> sb.append(var1.getText() + " = !" + var1.getText() + ";\n");
+                case "CNOT" -> sb.append(ctx.variable(1).getText() + " = (" + var1.getText() + " ^ " + ctx.variable(1).getText() + ");\n");
+                case "CCNOT" -> sb.append(ctx.variable(2).getText() + " = (" + ctx.variable(2).getText() + " ^ (" + var1.getText() + " & " + ctx.variable(1).getText() + "));\n");
+                default -> throw new RuntimeException("Shouldn't be here!");
+            }
+        }
+        else if (ctx.quantum_op() != null) {
+            if (ctx.quantum_op().angle_rotation() != null){
+
+                String angle = visit(ctx.quantum_op().angle_rotation().args().arithmetic(0));
+                op = ctx.quantum_op().angle_rotation().getChild(0).getText();
+                if (ctx.variable().size() == 2 && !var1.Idfr().getText().equals(ctx.variable(1).Idfr().getText())){
+                    throw new RuntimeException("Controlled operations' operands must be qubits of the same register");
+                }
+                switch (op){
+                    case "Rx" -> sb.append("rotateX(" + var1.Idfr().getText() + ", " + getIndex(var1) + ", " + angle + ");\n");
+                    case "Ry" -> sb.append("rotateY(" + var1.Idfr().getText() + ", " + getIndex(var1) + ", " + angle + ");\n");
+                    case "Rz" -> sb.append("rotateZ(" + var1.Idfr().getText() + ", " + getIndex(var1) + ", " + angle + ");\n");
+                    case "CRx" -> sb.append("controlledRotateX(" + var1.Idfr().getText() + ", " + getIndex(var1) + ", " + getIndex(ctx.variable(1)) + ", " + angle + ");\n");
+                    case "CRy" -> sb.append("controlledRotateY(" + var1.Idfr().getText() + ", " + getIndex(var1) + ", " + getIndex(ctx.variable(1)) + ", " + angle + ");\n");
+                    case "CRz" -> sb.append("controlledRotateZ(" + var1.Idfr().getText() + ", " + getIndex(var1) + ", " + getIndex(ctx.variable(1)) + ", " + angle + ");\n");
+                    default -> throw new RuntimeException("Shouldn't be here!");
+                }
+            }
+            else{
+                op = ctx.quantum_op().Transformation().getText();
+                if (ctx.variable().size() >= 2){
+                    if (!var1.Idfr().getText().equals(ctx.variable(1).Idfr().getText())) {
+                        throw new RuntimeException("Controlled operations' operands must be qubits of the same register");
+                    }
+                    if (ctx.variable().size() == 3 && !var1.Idfr().getText().equals(ctx.variable(2).Idfr().getText())) {
+                        throw new RuntimeException("Controlled operations' operands must be qubits of the same register");
+                    }
+                }
+                switch (op){
+                    case "X" -> sb.append("pauliX(" + var1.Idfr().getText() + ", " + getIndex(var1) + ");\n");
+                    case "Y" -> sb.append("pauliY(" + var1.Idfr().getText() + ", " + getIndex(var1) + ");\n");
+                    case "Z" -> sb.append("pauliZ(" + var1.Idfr().getText() + ", " + getIndex(var1) + ");\n");
+                    case "H" -> sb.append("hadamard(" + var1.Idfr().getText() + ", " + getIndex(var1) + ");\n");
+                    case "CX" -> sb.append("controlledNot(" + var1.Idfr().getText() + ", " + getIndex(var1) + ", " + getIndex(ctx.variable(1)) + ");\n");
+                    case "CY" -> sb.append("controlledPauliY(" + var1.Idfr().getText() + ", " + getIndex(var1) + ", " + getIndex(ctx.variable(1)) + ");\n");
+                    case "CZ" -> sb.append("controlledPhaseFlip(" + var1.Idfr().getText() + ", " + getIndex(var1) + ", " + getIndex(ctx.variable(1)) + ");\n");
+                    case "CCX" -> sb.append("ctrls = {" + getIndex(var1) + ", " + getIndex(ctx.variable(1)) + "};\n" +
+                            "targs = {" + getIndex(ctx.variable(2)) + "};\n" +
+                            "multiControlledMultiQubitNot(" + var1.Idfr().getText() + ", ctrls.data(), 2, targs.data(), 1);\n");
+                    default -> throw new RuntimeException("Shouldn't be here!");
+                }
+            }
+        }
+        else {
+            Types vType = varType(var1.Idfr().getText());
+            switch (vType){
+                case BIT -> sb.append("std::swap(" + var1.getText() + ", " + ctx.variable(1).getText() + ");\n");
+                case REG -> sb.append("std::swap(" + var1.Idfr().getText() + ", " + ctx.variable(1).Idfr().getText() + ");\n");
+                case QREG -> sb.append("quregSwap(env, " + var1.Idfr().getText() + ", " + ctx.variable(1).Idfr().getText() + ");\n");
+                case QUBIT -> {
+                    if (getIndex(var1).equals("0") && getIndex(ctx.variable(1)).equals("0")){
+                        sb.append("quregSwap(env, " + var1.Idfr().getText() + ", " + ctx.variable(1).Idfr().getText() + ");\n");
+                    }
+                    else if (!getIndex(var1).equals("0") && !getIndex(ctx.variable(1)).equals("0")){
+                        sb.append("swapGate(" + var1.Idfr().getText() + ", " + getIndex(var1) + ", " + getIndex(ctx.variable(1)) + ");\n");
+                    }
+                    else{
+                        throw new RuntimeException("SWAP: invalid arguments");
+                    }
+                }
+            }
+        }
+        return sb.toString();
     }
 
     @Override
@@ -264,7 +370,7 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
         Types varType = varType(idfr1);
         switch (varType){
             case BIT, INT, ANGLE -> sb.append("if (" + idfr1 + " > " + idfr2 + ") goto " + label + ";\n");
-            case REG -> sb.append("if (isZero(" + idfr1 + ")) goto " + label + ";\n");
+            case REG -> sb.append("if (compareRegs(" + idfr1 + ", + " + idfr2 + ")) goto " + label + ";\n");
             default -> throw new RuntimeException("Wrong type!");
         }
         return "";
@@ -272,7 +378,7 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
 
     @Override
     public String visitLabel(QAALParser.LabelContext ctx) {
-        return "";
+        throw new RuntimeException("Shouldn't be here!");
     }
 
     @Override
@@ -282,12 +388,12 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
 
     @Override
     public String visitCsRand(QAALParser.CsRandContext ctx) {
-        return "";
+        return ctx.variable().getText() + " = std::rand() % 2\n";
     }
 
     @Override
     public String visitCsSet(QAALParser.CsSetContext ctx) {
-        return "";
+        return ctx.Idfr() + " = " + visit(ctx.arithmetic());
     }
 
     @Override
@@ -302,7 +408,7 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
 
     @Override
     public String visitPiArith(QAALParser.PiArithContext ctx) {
-        return "M_PI";
+        return "PI";
     }
 
     @Override

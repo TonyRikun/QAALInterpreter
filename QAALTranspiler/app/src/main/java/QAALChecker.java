@@ -233,12 +233,12 @@ public class QAALChecker extends QAALBaseVisitor<Types>
             if (varSize != 2) throw new TypeException().argumentNumberError();
         }
 
-        if (!opType.equals("swap")) {
+        if (!opType.equals("swap")) { //Checking if variables are of correct type
             for (QAALParser.VariableContext var : ctx.variable()) {
                 Types type = visit(var);
-                if (opType.equals("qOp") && !(type == Types.QREG || type == Types.QUBIT)) {
+                if (opType.equals("qOp") && !(type == Types.QUBIT)) {
                     throw new TypeException().argumentError();
-                } else if (opType.equals("cOp") && !(type == Types.REG || type == Types.BIT)) {
+                } else if (opType.equals("cOp") && !(type == Types.BIT)) {
                     throw new TypeException().argumentError();
                 }
             }
@@ -349,7 +349,7 @@ public class QAALChecker extends QAALBaseVisitor<Types>
     @Override
     public Types visitCsRand(QAALParser.CsRandContext ctx) {
         Types type = visit(ctx.variable());
-        if (!(type == Types.BIT || type == Types.REG)){
+        if (!(type == Types.BIT)){
             throw new TypeException().randomisedVarError();
         }
         return Types.UNIT;

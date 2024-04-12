@@ -79,6 +79,6 @@ WS=46
 'bool'=37
 'stop'=38
 'operand'=39
-'pi'=40
+'PI'=40
 'bits'=41
 'qubits'=42

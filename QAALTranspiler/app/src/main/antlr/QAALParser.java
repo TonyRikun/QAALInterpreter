@@ -46,7 +46,7 @@ public class QAALParser extends Parser {
 			"'Mz'", "'->'", "'Rx'", "'Ry'", "'Rz'", "'CRx'", "'CRy'", "'CRz'", "'jump'", 
 			"'if'", "'zero'", "'gtr'", "'@'", "'randomise'", "'set'", "'['", "']'", 
 			null, null, null, "'SWAP'", null, "'register'", "'bit'", "'qubit'", "'integer'", 
-			"'angle'", "'unit'", "'bool'", "'stop'", "'operand'", "'pi'", "'bits'", 
+			"'angle'", "'unit'", "'bool'", "'stop'", "'operand'", "'PI'", "'bits'", 
 			"'qubits'"
 		};
 	}
