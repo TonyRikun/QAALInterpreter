@@ -15,7 +15,7 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
     }
 
     private String getIndex(QAALParser.VariableContext var){ //If var is an indexed register, returns the index, else, returns "0"
-        return var.index() != null ? var.index().Intlit().getText() : "0";
+        return var.index() != null ? var.index().Intlit().getText() : " 0";
     }
 
     @Override
@@ -23,13 +23,16 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
         StringBuilder sb = new StringBuilder();
         sb.append("#include <QuEST.h>\n" +
                 "#include <stdio.h>\n" +
-                "#include <cmath>\n" +
+                "#include <iostream>\n" +
                 "#include <array>\n" +
                 "#include <string>\n" +
                 "#include <bitset>\n" +
                 "#include <ctime>\n" +
-                "#include <utility>\n" +
                 "#include <cstdlib>\n" +
+                "#include <vector>\n" +
+                "#include <utility>\n" +
+                "#include <fstream>\n" +
+                "#include <sstream>\n" +
                 "const double PI = 3.141592653589793;\n" +
                 "std::vector<int> ctrls = {0, 1};\n" +
                 "std::vector<int> targs = {2};\n" +
@@ -60,25 +63,88 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
                 "\tcloneQureg(reg1, reg2);\n" +
                 "\tcloneQureg(reg2, temp);\n" +
                 "\tdestroyQureg(temp, env);\n" +
+                "}\n" +
+                "template <size_t N>\n" +
+                "void measureQureg(Qureg& reg, std::array<int, N>& myArr){\n" +
+                "\tfor (int i = 0; i < reg.numQubitsRepresented; i++){\n" +
+                "\t\tmyArr[i] = measure(reg, i);\n" +
+                "\t}\n" +
+                "}\n" +
+                "template <size_t N>\n" +
+                "std::string regToString(std::array<int, N> reg){\n" +
+                "\tstd::string strOut;\n" +
+                "\tfor (int i = 0; i < reg.size(); i++){\n" +
+                "\t\tstrOut += std::to_string(reg[i]);\n" +
+                "\t}\n" +
+                "\treturn strOut;\n" +
                 "}\n"
                 );
         for (QAALParser.Subroutines_decContext sub : ctx.dec().subroutines_dec()){
             sb.append(visit(sub));
         }
         sb.append("\n" +
-                "int main() {\n" +
-                "std::srand((unsigned int)std::time(NULL));\n" +
-                "QuESTEnv env = createQuESTEnv();\n\n");
+                "int main(int argc, char* argv[]) {\n" +
+                "std::array<unsigned long int, 1> seedArray = {static_cast<unsigned long int>(std::time(NULL))};\n" +
+                "\tint numSeeds = 1;\n" +
+                "\tint batchSize = 1;\n" +
+                "\tif (argc > 1){\n" +
+                "\t\tbatchSize = std::stoi(argv[1]);\n" +
+                "\t}\n" +
+                "std::ofstream rOut(\"../../results.txt\");\n" +
+                "rOut << batchSize << \" \" << " + ctx.output().size() + " << \"\\n\";\n"+
+                "rOut "
+        );
+        for (QAALParser.OutputContext out : ctx.output()){
+            sb.append("<< \"" + out.Idfr().getText() + "\" <<  \" \" ");
+        }
+        sb.append("<< \"\\n\";\n");
+        sb.append("for (int batch = 0; batch < batchSize; batch++){\n" +
+                "std::srand((unsigned int)std::time(NULL) + batch);\n" +
+                "\n" +
+                "QuESTEnv env = createQuESTEnv();\n" +
+                "seedArray[0] += batch;\n" +
+                "seedQuEST(&env, seedArray.data(), numSeeds);\n"
+        );
         for (QAALParser.Additional_regContext reg : ctx.dec().additional_reg()){
             sb.append(visit(reg));
         }
         sb.append(visit(ctx.body()));
+//        sb.append("rOut ");
+//        for (QAALParser.OutputContext out : ctx.output()){
+//            if (globalIdfrs.get(out.Idfr().getText()) == Types.BIT || out.index() != null) {
+//                sb.append("<< 1 <<  \" \" ");
+//            }
+//            else{
+//                sb.append("<< " + out.index().Intlit().getText() + " <<  \" \" ");
+//            }
+//        }
+//        sb.append("<< \"\\n\";" + "\n");
+        sb.append("rOut ");
         for (QAALParser.OutputContext out : ctx.output()){
-            sb.append(visit(out));
+            if (globalIdfrs.get(out.Idfr().getText()) == Types.BIT) {
+                sb.append("<< " + out.Idfr().getText() + " << \" \" ");
+            }
+            else{
+                if (out.index() != null){
+                    sb.append("<< " + out.Idfr().getText() + out.index().getText() + " << \" \" ");
+                }
+                else {
+                    sb.append("<< regTostring(" + out.index().Intlit().getText() + ")" + " <<  \" \" ");
+                }
+            }
+        }
+        sb.append("<< \"\\n\";\n");
+        for(String k : globalIdfrs.keySet()){
+            if (globalIdfrs.get(k) == Types.QREG || globalIdfrs.get(k) == Types.QUBIT) {
+                sb.append("destroyQureg(" + k + ", env);\n");
+            }
         }
         sb.append("destroyQuESTEnv(env);\n" +
+                "}\n" +
+                "rOut.close();\n" +
                 "return 0;\n" +
-                "}");
+                "}\n"
+                );
         return sb.toString();
     }
 
@@ -101,7 +167,7 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
 
     @Override
     public String visitOutput(QAALParser.OutputContext ctx) {
-        return "";
+        throw new RuntimeException("Shouldn't be here");
     }
 
     @Override
@@ -149,25 +215,29 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
             sb.append(visit(ctx.vardec().ro_params()));
         }
         for (QAALParser.Additional_regContext reg : ctx.additional_reg()){ //Getting reg_params types
-            sb_regs.append(reg);
+            sb_regs.append(visit(reg));
         }
         for (TerminalNode idfr : ctx.vardec().reg_params().Idfr()){
             switch (localIdfrs.get(idfr.getText())){
-                case BIT -> sb.append(", bool " + idfr.getText());
-                case REG -> sb.append(", std::array<int, N> " + idfr.getText());
-                case QUBIT, QREG -> sb.append(", Qureg " + idfr.getText());
+                case BIT -> sb.append(", bool& " + idfr.getText());
+                case REG -> sb.append(", std::array<int, N>& " + idfr.getText());
+                case QUBIT, QREG -> sb.append(", Qureg& " + idfr.getText());
                 default -> {}
             }
         }
         sb.append(") {\n");
         sb.append(sb_regs);
         sb.append(visit(ctx.body()));
-        for (TerminalNode idfr : ctx.vardec().reg_params().Idfr()){
-            switch (localIdfrs.get(idfr.getText())){
-                case QUBIT, QREG -> sb.append("detroyQureg(" + idfr.getText() + ", env);\n");
-                default -> {}
+        for (QAALParser.Additional_regContext reg : ctx.additional_reg()){
+            if (reg.Operand() == null) {
+                switch (localIdfrs.get(reg.reg_dec().Idfr().getText())) {
+                    case QUBIT, QREG -> sb.append("detroyQureg(" + reg.reg_dec().Idfr().getText() + ", env);\n");
+                    default -> {
+                    }
+                }
             }
         }
+        sb.append("}\n");
         return sb.toString();
     }
 
@@ -179,7 +249,7 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
         }
         else {
             sb.append("Qureg " + ctx.Idfr().getText() + " = createQureg(" + ctx.Intlit().getText() + ", env);\n");
-            sb.append("initZeroState (" + ctx.Idfr().getText() + ");\n");
+            sb.append("initZeroState(" + ctx.Idfr().getText() + ");\n");
         }
         return sb.toString();
     }
@@ -192,7 +262,7 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
         }
         else {
             sb.append("Qureg " + ctx.Idfr().getText() + " = createQureg(1, env);\n");
-            sb.append("initZeroState (" + ctx.Idfr().getText() + ");\n");
+            sb.append("initZeroState(" + ctx.Idfr().getText() + ");\n");
         }
         return sb.toString();
     }
@@ -206,7 +276,7 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
     public String visitRo_params(QAALParser.Ro_paramsContext ctx) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ctx.Idfr().size(); i++){
-            sb.append(", " + ctx.cs_type(i).getText() + " " + ctx.Idfr(i).getText());
+            sb.append(", " + (ctx.cs_type(i).getText().equals("integer") ? "int " : "qreal ") + " " + ctx.Idfr(i).getText());
         }
         return sb.toString();
     }
@@ -219,13 +289,13 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
     @Override
     public String visitCs_dec(QAALParser.Cs_decContext ctx) {
         StringBuilder sb = new StringBuilder();
-        sb.append(ctx.cs_type().getText().equals("integer") ? "int " : "qreal " + ctx.Idfr().getText() + " = " + visit(ctx.arithmetic()));
+        sb.append((ctx.cs_type().getText().equals("integer") ? "int " : "qreal ") + ctx.Idfr().getText() + " = " + visit(ctx.arithmetic()) + ";\n");
         return sb.toString();
     }
 
     @Override
     public String visitCs_type(QAALParser.Cs_typeContext ctx) {
-        return "";
+        throw new RuntimeException("Shouldn't be here");
     }
 
     @Override
@@ -297,10 +367,10 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
                 case REG -> sb.append("std::swap(" + var1.Idfr().getText() + ", " + ctx.variable(1).Idfr().getText() + ");\n");
                 case QREG -> sb.append("quregSwap(env, " + var1.Idfr().getText() + ", " + ctx.variable(1).Idfr().getText() + ");\n");
                 case QUBIT -> {
-                    if (getIndex(var1).equals("0") && getIndex(ctx.variable(1)).equals("0")){
+                    if (getIndex(var1).equals(" 0") && getIndex(ctx.variable(1)).equals(" 0")){
                         sb.append("quregSwap(env, " + var1.Idfr().getText() + ", " + ctx.variable(1).Idfr().getText() + ");\n");
                     }
-                    else if (!getIndex(var1).equals("0") && !getIndex(ctx.variable(1)).equals("0")){
+                    else if (!getIndex(var1).equals(" 0") && !getIndex(ctx.variable(1)).equals(" 0")){
                         sb.append("swapGate(" + var1.Idfr().getText() + ", " + getIndex(var1) + ", " + getIndex(ctx.variable(1)) + ");\n");
                     }
                     else{
@@ -314,32 +384,50 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
 
     @Override
     public String visitMzExp(QAALParser.MzExpContext ctx) {
-        return "";
+        StringBuilder sb = new StringBuilder();
+        QAALParser.VariableContext var1 = ctx.variable(0);
+        QAALParser.VariableContext var2 = ctx.variable(1);
+        if (!getIndex(var1).equals(" 0")){
+            sb.append("measureQureg(" + var1.Idfr().getText() + ", " + var2.Idfr().getText() + ");\n");
+        }
+        else{
+            sb.append(var2.Idfr().getText() + " = measure(" + var1.Idfr().getText() + ", " + getIndex(var1) + ");\n");
+        }
+        return sb.toString();
     }
 
     @Override
     public String visitInvokeExp(QAALParser.InvokeExpContext ctx) {
-        return "";
+        StringBuilder sb = new StringBuilder();
+        sb.append(ctx.Idfr().getText() + "(env");
+        for (QAALParser.ArithmeticContext arth : ctx.args().arithmetic()){
+            sb.append(", " + visit(arth));
+        }
+        for (QAALParser.VariableContext var : ctx.variable()){
+            sb.append(", " + var.getText());
+        }
+        sb.append(");\n");
+        return sb.toString();
     }
 
     @Override
     public String visitLabelExp(QAALParser.LabelExpContext ctx) {
-        return "";
+        return ctx.label().Idfr().getText() + ":\n";
     }
 
     @Override
     public String visitQuantum_op(QAALParser.Quantum_opContext ctx) {
-        return "";
+        throw new RuntimeException("Shouldn't be here");
     }
 
     @Override
     public String visitAngle_rotation(QAALParser.Angle_rotationContext ctx) {
-        return "";
+        throw new RuntimeException("Shouldn't be here");
     }
 
     @Override
     public String visitArgs(QAALParser.ArgsContext ctx) {
-        return "";
+        throw new RuntimeException("Shouldn't be here");
     }
 
     @Override
@@ -352,6 +440,9 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
         StringBuilder sb = new StringBuilder();
         String idfr = ctx.variable().Idfr().getText();
         Types varType = varType(idfr);
+        if (varType == Types.REG && getIndex(ctx.variable()).equals(" 0")) {
+            varType = Types.BIT;
+        }
         String label = ctx.label().Idfr().getText();
         switch (varType){
             case BIT, INT, ANGLE -> sb.append("if (" + idfr + " == 0) goto " + label + ";\n");
@@ -368,12 +459,15 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
         String idfr1 = ctx.variable(0).Idfr().getText();
         String idfr2 = ctx.variable(1).Idfr().getText();
         Types varType = varType(idfr1);
+        if (varType == Types.REG && getIndex(ctx.variable(0)).equals(" 0")) {
+            varType = Types.BIT;
+        }
         switch (varType){
             case BIT, INT, ANGLE -> sb.append("if (" + idfr1 + " > " + idfr2 + ") goto " + label + ";\n");
             case REG -> sb.append("if (compareRegs(" + idfr1 + ", + " + idfr2 + ")) goto " + label + ";\n");
             default -> throw new RuntimeException("Wrong type!");
         }
-        return "";
+        return sb.toString();
     }
 
     @Override
@@ -420,11 +514,11 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
 
     @Override
     public String visitVariable(QAALParser.VariableContext ctx) {
-        return "";
+        throw new RuntimeException("Shouldn't be here");
     }
 
     @Override
     public String visitIndex(QAALParser.IndexContext ctx) {
-        return "";
+        throw new RuntimeException("Shouldn't be here");
     }
 }

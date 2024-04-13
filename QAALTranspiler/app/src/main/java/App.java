@@ -30,7 +30,7 @@ public class App {
 
         String code = generator.visit(tree);
         //System.out.println(code);
-        File f = new File("../cpp/test.cpp");
+        File f = new File("./cpp/test.cpp"); //Need to change
         if(!f.exists()) {
             throw new FileNotFoundException("NO FILE" + new File(".").getAbsolutePath().toString());
         }
