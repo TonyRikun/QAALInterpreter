@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 
 public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implements QAALVisitor<String> {
-    private HashMap<String, Integer> varsParams = new HashMap<>();
     private HashMap<String, Types> localIdfrs = new HashMap<>();
     private HashMap<String, Types> globalIdfrs = new HashMap<>();
 
