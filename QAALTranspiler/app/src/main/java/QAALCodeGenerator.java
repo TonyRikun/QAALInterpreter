@@ -108,16 +108,6 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
             sb.append(visit(reg));
         }
         sb.append(visit(ctx.body()));
-//        sb.append("rOut ");
-//        for (QAALParser.OutputContext out : ctx.output()){
-//            if (globalIdfrs.get(out.Idfr().getText()) == Types.BIT || out.index() != null) {
-//                sb.append("<< 1 <<  \" \" ");
-//            }
-//            else{
-//                sb.append("<< " + out.index().Intlit().getText() + " <<  \" \" ");
-//            }
-//        }
-//        sb.append("<< \"\\n\";" + "\n");
         sb.append("rOut ");
         for (QAALParser.OutputContext out : ctx.output()){
             if (globalIdfrs.get(out.Idfr().getText()) == Types.BIT) {
@@ -128,7 +118,7 @@ public class QAALCodeGenerator extends AbstractParseTreeVisitor<String> implemen
                     sb.append("<< " + out.Idfr().getText() + out.index().getText() + " << \" \" ");
                 }
                 else {
-                    sb.append("<< regTostring(" + out.index().Intlit().getText() + ")" + " <<  \" \" ");
+                    sb.append("<< regToString(" + out.Idfr() + ")" + " <<  \" \" ");
                 }
             }
         }

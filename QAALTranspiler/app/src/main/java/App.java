@@ -19,6 +19,7 @@ public class App {
         parser.removeErrorListeners();
         parser.addErrorListener(new ErrorListener());
         QAALParser.ProgContext tree = parser.prog(); // begin parsing at prog rule
+
         try {
             QAALChecker checker = new QAALChecker();
             checker.visit(tree);
@@ -30,9 +31,9 @@ public class App {
 
         String code = generator.visit(tree);
         //System.out.println(code);
-        File f = new File("./cpp/test.cpp"); //Need to change
+        File f = new File("../cpp/test.cpp");
         if(!f.exists()) {
-            throw new FileNotFoundException("NO FILE" + new File(".").getAbsolutePath().toString());
+            throw new FileNotFoundException("NO FILE" + new File(".").getAbsolutePath());
         }
         FileOutputStream outputStream = new FileOutputStream(f);
         outputStream.write(code.getBytes());
